@@ -1,0 +1,86 @@
+.levelEditor {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+.levelEditor.center {
+    align-items: center;
+    justify-content: center;
+}
+.levelEditor.topLeft {
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+.children {
+    width: calc(100%);
+    height: calc(100%);
+    position: absolute;
+    left:0;
+    top: 0;
+
+}
+.children.isParentActivePath {
+    outline: 2px dotted black;
+    opacity: 1;
+    box-sizing: border-box;
+
+}
+.children.isParentActiveLeaf {
+    /*border: none;*/
+    opacity: 1;
+    box-sizing: border-box;
+    outline: 2px dotted black;
+
+}
+.children.isParentInactiveStart {
+
+
+}
+
+.children.disabled {
+    pointer-events: none;
+}
+
+
+.children > div {
+    position: absolute;
+}
+
+.newDiv {
+    border: 1px solid black;
+    background: transparent;
+    box-sizing: border-box;
+}
+/**/
+
+.div0 {
+    width: 100%;
+    height: 100%;
+    /*transform: rotate(45deg);*/
+    background: white;
+    position: relative;
+}
+
+.leftColumn {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    left: 0;
+    top:0;
+
+}
+.gameParamsForm {
+    border: 1px solid black;
+    background: white;
+    padding: 4px 6px;
+}
+
+
+.rightColumn {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: 0;
+    top:0;
+
+}

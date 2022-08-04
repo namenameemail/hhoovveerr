@@ -1,0 +1,38 @@
+.divTree {
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    padding: 3px;
+}
+
+
+.divTreeNodeContainer {
+    padding-left: 10px;
+    /*border-bottom: 1px solid black;*/
+    box-sizing: border-box;
+}
+.divTreeNodeContainer.isActiveLeaf > .divTreeNode {
+    border: 2px dashed black;
+}
+
+.divTreeNode {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    /*border: 1px solid black;*/
+}
+
+.divTreeNodeName {
+    flex: 1 1 auto;
+    /*background: white;*/
+}
+
+.divChildren {
+    /*border-bottom: 1px solid black;*/
+    display: flex;
+    flex-direction: column;
+
+    /*margin: 2px;*/
+    /*padding-left: 10px;*/
+}
