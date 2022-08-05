@@ -5,7 +5,6 @@ export type CssSize = [string, string]
 
 export interface DivTreeState {
     root: DivState
-    activePath: string
 }
 
 export type DivParameters = {

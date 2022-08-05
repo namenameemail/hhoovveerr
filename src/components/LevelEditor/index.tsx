@@ -3,8 +3,8 @@ import { useKeydown } from 'bbuutoonnss';
 import React, { CSSProperties, useMemo } from "react";
 import { EditDiv } from "./components/EditDiv";
 import { Provider as StoreProvider, useDispatch, useSelector } from 'react-redux';
-import { store } from './store';
-import { deleteDiv, selectDivTreeActivePath, selectDivTreeRoot } from "./store/divTree";
+import { store, useEditorDispatch, useEditorSelector } from './store';
+import { deleteDiv, selectDivTreeRoot } from "./store/divTree";
 import { selectGameParams, setGameParams } from "./store/gameParams";
 import { BorderParams, GameParams, Layout } from "./store/gameParams/types";
 import { BlurEnterNumberInputFor, BlurEnterTextInputFor, CheckboxFor, For, ObjectFor, SelectDropFor } from "../For";
@@ -13,6 +13,9 @@ import { EditorParams } from "./store/editorParams/types";
 import { selectEditorParams, setEditorParams } from "./store/editorParams";
 import { DivTree } from "./components/DivTree";
 import { ViewDiv } from "./components/ViewDiv";
+import { useHotkeys } from '@mantine/hooks';
+import { ActionCreators } from "redux-undo";
+import { selectActivePath } from "./store/activePath";
 
 export interface LevelEditorProps {
 
@@ -26,27 +29,36 @@ export const LevelEditor = (function (LevelEditor: React.ComponentType<LevelEdit
     );
 })(function (props: LevelEditorProps) {
 
-    const activePath = useSelector(selectDivTreeActivePath);
-    const root = useSelector(selectDivTreeRoot);
-    const gameParams = useSelector(selectGameParams);
-    const editorParams = useSelector(selectEditorParams);
-    const dispatch = useDispatch();
+    const activePath = useEditorSelector(selectActivePath);
+    const root = useEditorSelector(selectDivTreeRoot);
+    const gameParams = useEditorSelector(selectGameParams);
+    const editorParams = useEditorSelector(selectEditorParams);
+    const dispatch = useEditorDispatch();
 
     // console.log(activePath);
 
-    useKeydown((event: KeyboardEvent) => {
-        if (event.key == "Backspace") {
-            console.log("Backspace Pressed");
-
-            // dispatch(deleteDiv({ path: activePath }));
-            // dispatch(set)
-            //
-            // setChildren(path.reduce((res, i,  index) => {
-            //     res[i] =
-            // }, children))
-
-        }
-    }, [activePath]);
+    useHotkeys([
+        ['mod+S', () => console.log('save')],
+        ['mod+X', () => console.log('cut')],
+        ['mod+V', () => console.log('paste')],
+        ['mod+C', () => console.log('copy')],
+        ['mod+Z', () => dispatch(ActionCreators.undo())],
+        ['mod+shift+Z', () => dispatch(ActionCreators.redo())],
+        ['Backspace', () => dispatch(deleteDiv({ path: activePath }))],
+    ]);
+    // useKeydown((event: KeyboardEvent) => {
+    //     if (event.key == "Backspace") {
+    //         console.log("Backspace Pressed");
+    //
+    //         // dispatch(deleteDiv({ path: activePath }));
+    //         // dispatch(set)
+    //         //
+    //         // setChildren(path.reduce((res, i,  index) => {
+    //         //     res[i] =
+    //         // }, children))
+    //
+    //     }
+    // }, [activePath]);
 
     const backgroundStyle = useMemo<CSSProperties>(() => ({
         background: gameParams.background
@@ -84,7 +96,7 @@ export const LevelEditor = (function (LevelEditor: React.ComponentType<LevelEdit
                 >
                     <BlurEnterTextInputFor name="background"></BlurEnterTextInputFor>
                     <SelectDropFor
-                        getText={i => i} getValue={i => i} name="layout"
+                        getText={(i: any) => i} getValue={(i: any) => i} name="layout"
                         items={Object.values(Layout)}></SelectDropFor>
                 </For>
                 <For<EditorParams>

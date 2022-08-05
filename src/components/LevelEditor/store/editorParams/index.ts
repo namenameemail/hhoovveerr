@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { EditorState } from "../types";
 import { EditorParams } from "./types";
+import { EditorState } from "../index";
 
 const initialState: EditorParams = {
     hideInactivePath: false,

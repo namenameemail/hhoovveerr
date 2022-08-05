@@ -3,7 +3,7 @@ import cn from 'classnames';
 import { DivState } from "../../store/divTree/types";
 import { useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectDivTreeActivePath, setActivePath } from "../../store/divTree";
+import { selectActivePath, setActivePath } from "../../store/activePath";
 
 export interface DivTreeNodeProps {
     className?: string;
@@ -20,7 +20,7 @@ export function DivTreeNode(props: DivTreeNodeProps) {
 
     const path = `${parentPath ? (parentPath + '-') : ''}${nodeIndex !== undefined ? nodeIndex : ''}`
 
-    const activePath = useSelector(selectDivTreeActivePath);
+    const activePath = useSelector(selectActivePath);
     const isActiveLeaf = path === activePath;
 
     const dispatch = useDispatch();
@@ -41,7 +41,7 @@ export function DivTreeNode(props: DivTreeNodeProps) {
 
             >
                 <div className={styles.divTreeNodeName} onClick={handleNodeClick}>
-                    {nodeIndex}
+                    {nodeIndex || "0"}
                 </div>
                 {haveChildren && !hideChildren && (<button onClick={handleToggleIsOpen}>{!isOpen ? '>' : '^'}</button>)}
 

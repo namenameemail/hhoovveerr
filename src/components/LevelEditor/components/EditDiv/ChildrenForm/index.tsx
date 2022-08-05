@@ -2,7 +2,7 @@ import { DivState, Vec } from "../../../store/divTree/types";
 import React, { ReactNode, useCallback, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectEditorParams } from "../../../store/editorParams";
-import { addChildren, setActivePath } from "../../../store/divTree";
+import { addChildren } from "../../../store/divTree";
 import cn from "classnames";
 import styles from "../../../styles.module.css";
 import {
@@ -11,6 +11,7 @@ import {
     getRandomColor,
     DivDragHandler2ImperativeHandler
 } from 'bbuutoonnss';
+import { setActivePath } from "../../../store/activePath";
 
 export interface ChildrenFormProps {
     isParentActivePath?: boolean;

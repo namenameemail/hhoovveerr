@@ -10,10 +10,7 @@ import { DivState, Vec } from "../../store/divTree/types";
 import { useDispatch, useSelector } from "react-redux";
 import {
     addChildren,
-    changeColor,
-    selectDivTreeActivePath,
-    selectDivTreeRoot,
-    setActivePath,
+    changeColor, deleteDiv, divDown, divUp,
     updateDiv, updateDivParameters
 } from "../../store/divTree";
 import {
@@ -30,6 +27,8 @@ import {
     Vec2DragFor,
     Vec2DragPointerLockFor
 } from "../../../For";
+import { selectActivePath } from "../../store/activePath";
+import { useEditorDispatch } from "../../store";
 
 export interface EditDivProps extends Omit<React.HTMLProps<HTMLDivElement>, 'size' | 'onChange'> {
     parentDivRef?: RefObject<HTMLDivElement>;
@@ -63,8 +62,8 @@ export function EditDiv(props: EditDivProps) {
     const divRef = useRef<HTMLDivElement>(null);
     // isRoot && console.log('EditDiv', state.children.length);
 
-    const activePath = useSelector(selectDivTreeActivePath);
-    const dispatch = useDispatch();
+    const activePath = useSelector(selectActivePath);
+    const dispatch = useEditorDispatch();
 
     const isActiveLeaf = isRoot ? !activePath : path === activePath;
     const isActivePath = isRoot
@@ -102,7 +101,7 @@ export function EditDiv(props: EditDivProps) {
         dispatch(updateDivParameters({ path, divParams }));
     }, [path, state]);
 
-    const handleDivSizeChange = useCallback(({ x, y }: DragEvent, e: MouseEvent, savedSize?: Vec) => {
+    const handleDivSizeChange = useCallback((nohistory: boolean, { x, y }: DragEvent, e: MouseEvent, savedSize?: Vec) => {
         if (!parentDivRef?.current || savedSize === undefined) {
             return;
         }
@@ -117,11 +116,20 @@ export function EditDiv(props: EditDivProps) {
                     Math.max(0, savedSize[0] + x / parentSize[0] * 100),
                     Math.max(0, savedSize[1] + y / parentSize[1] * 100)
                 ]
-            }
+            },
+            nohistory
         }));
     }, [path, index, state, parentDivRef]);
+    const handleDivSizeChangeMove = useCallback((dragEvent: DragEvent, e: MouseEvent, savedSize?: Vec) => {
+        handleDivSizeChange(true, dragEvent, e, savedSize);
+    }, [handleDivSizeChange]);
+    const handleDivSizeChangeUp = useCallback((dragEvent: DragEvent, e: MouseEvent, savedSize?: Vec) => {
+        handleDivSizeChange(false, dragEvent, e, savedSize);
+    }, [handleDivSizeChange]);
 
-    const handleDivStartPointChange = useCallback(({ x, y }: DragEvent, e: MouseEvent, savedStart?: Vec) => {
+
+
+    const handleDivStartPointChange = useCallback((nohistory: boolean, { x, y }: DragEvent, e: MouseEvent, savedStart?: Vec) => {
         if (!parentDivRef?.current || savedStart === undefined) {
             return;
         }
@@ -137,9 +145,23 @@ export function EditDiv(props: EditDivProps) {
                     savedStart[0] + x / parentSize[0] * 100,
                     savedStart[1] + y / parentSize[1] * 100
                 ]
-            }
+            },
+            nohistory
         }));
     }, [path, index, state, parentDivRef]);
+
+
+    const handleDivStartPointChangeMove = useCallback((event: DragEvent, e: MouseEvent, savedStart?: Vec) => {
+        handleDivStartPointChange(true, event, e, savedStart)
+    }, [handleDivStartPointChange]);
+
+
+    const handleDivStartPointChangeUp = useCallback((event: DragEvent, e: MouseEvent, savedStart?: Vec) => {
+        handleDivStartPointChange(false, event, e, savedStart)
+    }, [handleDivStartPointChange]);
+
+
+
     const handleDivAngleChange = useCallback(({ x, y }: DragEvent, e: MouseEvent, savedStart?: number) => {
 
 
@@ -152,6 +174,15 @@ export function EditDiv(props: EditDivProps) {
         }));
     }, [path, state]);
 
+    const handleDelete = useCallback(() => {
+        dispatch(deleteDiv({ path }));
+    }, [path]);
+    const handleUp = useCallback(() => {
+        dispatch(divUp({ path }));
+    }, [path]);
+    const handleDown = useCallback(() => {
+        dispatch(divDown({ path }));
+    }, [path]);
 
     return (
         <div
@@ -178,7 +209,8 @@ export function EditDiv(props: EditDivProps) {
                 }}
                 angle={parentAngle}
                 saveValue={state.parameters.size}
-                onDrag={handleDivSizeChange}
+                onDrag={handleDivSizeChangeMove}
+                onDragEnd={handleDivSizeChangeUp}
             />
             <DivDragHandler<Vec>
                 style={{
@@ -193,7 +225,8 @@ export function EditDiv(props: EditDivProps) {
                 }}
                 angle={parentAngle}
                 saveValue={state.parameters.startPoint}
-                onDrag={handleDivStartPointChange}
+                onDrag={handleDivStartPointChangeMove}
+                onDragEnd={handleDivStartPointChangeUp}
             />
             <div
                 {...rest}
@@ -250,6 +283,9 @@ export function EditDiv(props: EditDivProps) {
                     <CheckboxFor name={'relativeSizeY'}></CheckboxFor>
                     <CheckboxFor name={'relativeStartX'}></CheckboxFor>
                     <CheckboxFor name={'relativeStartY'}></CheckboxFor>
+                    <button onClick={handleDelete}>delete</button>
+                    <button onClick={handleDown}>down</button>
+                    <button onClick={handleUp}>up</button>
                 </For>
             )}
         </div>

@@ -2,7 +2,6 @@ import styles from '../../styles.module.css';
 import cn from 'classnames';
 import React, { CSSProperties, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { changeColor, selectDivTreeActivePath, selectDivTreeRoot } from "../../store/divTree";
 import { selectEditorParams } from "../../store/editorParams";
 import { DivState } from "../../store/divTree/types";
 import { DivHover } from "../../../DivHover/DivHover";
