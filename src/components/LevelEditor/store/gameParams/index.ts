@@ -8,7 +8,7 @@ const initialState: GameParams = {
 };
 
 export const gameParamsSlice = createSlice({
-    name: 'divTree',
+    name: 'gameParams',
     initialState,
     reducers: {
         setGameParams: (state: GameParams, action: PayloadAction<GameParams>) => {
@@ -20,7 +20,5 @@ export const gameParamsSlice = createSlice({
 export const {
     setGameParams
 } = gameParamsSlice.actions;
-
-// export const
 
 export const selectGameParams = (state: EditorState) => state.gameParams;

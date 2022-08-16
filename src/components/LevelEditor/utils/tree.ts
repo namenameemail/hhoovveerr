@@ -4,18 +4,18 @@ import { PATH_SPLITTER } from "../store/divTree/consts";
 export const getPathParentPath = (path: string) => {
     const pathArray = path.split('-');
     return pathArray.length > 1 ? pathArray.slice(0, -1).join('-') : '';
-}
+};
 export const getPathIndex = (path: string) => {
     const pathArray = path.split('-');
     return +pathArray[pathArray.length - 1];
-}
+};
 
 export const getPathParentAndIndex = (path: string) => {
     const pathArray = path.split('-');
     const parentPath = pathArray.length > 1 ? pathArray.slice(0, -1).join('-') : '';
     const index = +pathArray[pathArray.length - 1];
-    return {parentPath, index}
-}
+    return { parentPath, index };
+};
 export const updateByPath = (root: DivState, pathString: string, update: (state: DivState) => DivState) => {
 
     const path = pathString ?
@@ -99,8 +99,7 @@ export const getByPath = (root: DivState, pathString: string): DivState | undefi
         : [];
 
     const iteration = (node?: DivState, i: number = 0): DivState | undefined => {
-        console.log(pathString, path, i, node);
-        if (i < path.length - 1) {
+        if (i < path.length) {
             return iteration(node?.children[path[i]], ++i);
         } else {
             return node;
@@ -108,4 +107,27 @@ export const getByPath = (root: DivState, pathString: string): DivState | undefi
     };
 
     return iteration(root);
+};
+
+export const getByPathWithParentAngle = (root: DivState, pathString: string): {
+    div: DivState | undefined
+    parentAngle: number
+} => {
+    const path = pathString
+        ? pathString.split(PATH_SPLITTER).map(index => +index)
+        : [];
+
+    let parentAngle = 0;
+    const iteration = (node?: DivState, i: number = 0): DivState | undefined => {
+        if (i < path.length) {
+            // console.log('parentAngle', path, i, parentAngle, node?.parameters.angle)
+            parentAngle += (node?.parameters.angle || 0);
+            return iteration(node?.children[path[i]], ++i);
+        } else {
+            return node;
+        }
+    };
+
+
+    return { div: iteration(root), parentAngle };
 };

@@ -2,6 +2,10 @@ body {
     margin: 0;
 }
 
+div {
+    /*box-sizing: border-box;*/
+
+}
 .app {
     box-sizing: border-box;
     width: 100vw;

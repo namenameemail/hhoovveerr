@@ -11,12 +11,13 @@ export interface DivTreeNodeProps {
     index?: number;
     state: DivState;
     hideChildren?: boolean;
+    isRoot?: boolean;
 }
 
 export function DivTreeNode(props: DivTreeNodeProps) {
 
     const [isOpen, setIsOpen] = useState(true);
-    const { className, state, parentPath, index: nodeIndex, hideChildren } = props;
+    const { isRoot, className, state, parentPath, index: nodeIndex, hideChildren } = props;
 
     const path = `${parentPath ? (parentPath + '-') : ''}${nodeIndex !== undefined ? nodeIndex : ''}`
 
@@ -41,7 +42,8 @@ export function DivTreeNode(props: DivTreeNodeProps) {
 
             >
                 <div className={styles.divTreeNodeName} onClick={handleNodeClick}>
-                    {nodeIndex || "0"}
+                    {/*{path || 'root'}*/}
+                    {isRoot ? 'root' : nodeIndex}
                 </div>
                 {haveChildren && !hideChildren && (<button onClick={handleToggleIsOpen}>{!isOpen ? '>' : '^'}</button>)}
 
@@ -53,6 +55,7 @@ export function DivTreeNode(props: DivTreeNodeProps) {
                         state.children.map((div, childrenIndex) => {
                             return (
                                 <DivTreeNode
+                                    key={childrenIndex}
                                     hideChildren={!isOpen}
                                     index={childrenIndex}
                                     parentPath={path}

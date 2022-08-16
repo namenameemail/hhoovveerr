@@ -7,17 +7,8 @@ export interface DivTreeState {
     root: DivState
 }
 
-export type DivParameters = {
-    startPoint: Vec;
-    size: Vec;
-
-    relativeSizeX?: boolean
-    relativeSizeY?: boolean
-    relativeStartX?: boolean
-    relativeStartY?: boolean
-
-    angle: number;
-    color: string
+export type DivStyleParameters = {
+    color?: string
     borderWidth?: number
     borderRadius?: number
     borderStyle?: string
@@ -39,6 +30,31 @@ export type DivParameters = {
     textShadowXYOffset?: [number, number]
     textShadowBlur?: number
     textShadowColor?: string
+
+    backgroundImageName?: string
+}
+
+export enum SizeUnit {
+    px = 'px',
+    pc = '%',
+    vw = 'vw',
+    vh = 'vh',
+}
+export type DivParameters = DivStyleParameters & {
+    startPoint: Vec;
+    size: Vec;
+    angle: number;
+
+    sizeXUnit: SizeUnit
+    sizeYUnit: SizeUnit
+    startXUnit: SizeUnit
+    startYUnit: SizeUnit
+    //
+    // relativeSizeX?: boolean
+    // relativeSizeY?: boolean
+    // relativeStartX?: boolean
+    // relativeStartY?: boolean
+
 }
 
 

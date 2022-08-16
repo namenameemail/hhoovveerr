@@ -1,5 +1,5 @@
-import { DivState, Vec } from "../../../store/divTree/types";
-import React, { ReactNode, useCallback, useRef, useState } from "react";
+import { DivState, SizeUnit, Vec } from "../../../store/divTree/types";
+import React, { CSSProperties, ReactNode, RefObject, useCallback, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectEditorParams } from "../../../store/editorParams";
 import { addChildren } from "../../../store/divTree";
@@ -12,6 +12,7 @@ import {
     DivDragHandler2ImperativeHandler
 } from 'bbuutoonnss';
 import { setActivePath } from "../../../store/activePath";
+import { selectCurrentBrush } from "../../../store/brushes";
 
 export interface ChildrenFormProps {
     isParentActivePath?: boolean;
@@ -25,11 +26,14 @@ export interface ChildrenFormProps {
     value: DivState[];
 
     children?: ReactNode;
+    parentRef: RefObject<HTMLElement>
+    style?: CSSProperties
 }
 
 export function ChildrenForm(props: ChildrenFormProps) {
 
     const editorParams = useSelector(selectEditorParams);
+    const currentBrush = useSelector(selectCurrentBrush);
     const dispatch = useDispatch();
 
     const divHoverRef = useRef<DivDragHandler2ImperativeHandler>(null);
@@ -43,6 +47,8 @@ export function ChildrenForm(props: ChildrenFormProps) {
         isParentActivePath = true,
         isParentActiveLeaf,
         isParentInactiveStart,
+        parentRef,
+        style,
     } = props;
 
     const drawOnMouseDown = editorParams.draw;
@@ -55,18 +61,23 @@ export function ChildrenForm(props: ChildrenFormProps) {
     }, []);
 
     const handleDragStart = useCallback((event: DragEvent, e: MouseEvent) => {
+        setStartPoint([e.offsetX, e.offsetY]);
+        setSize([0, 0]);
+        if (isParentActiveLeaf) {
 
-        if (drawOnMouseDown) {
-            setStartPoint([e.offsetX, e.offsetY]);
-            setSize([0, 0]);
+        } else {
+            dispatch(setActivePath(parentPath || ''));
         }
-
-        dispatch(setActivePath(parentPath || ''));
-    }, [parentPath, drawOnMouseDown]);
+    }, [parentPath, drawOnMouseDown, isParentActiveLeaf]);
 
     const handleDragEnd = useCallback((event: DragEvent, e: MouseEvent) => {
+        if (!parentRef.current) {
+            return
+        }
         const parentSize = [divHoverRef.current?.divRef.current.offsetWidth, divHoverRef.current?.divRef.current.offsetHeight];
-
+        console.log(divHoverRef.current?.divRef.current.offsetWidth, divHoverRef.current?.divRef.current.offsetHeight )
+        // const parentSize = [parentRef.current.offsetWidth, parentRef.current.offsetHeight];
+        // console.log(parentRef.current.offsetWidth, parentRef.current.offsetHeight )
 
         if (startPoint && size?.[0] && size?.[1]) {
             const absoluteStartPoint = [
@@ -77,6 +88,7 @@ export function ChildrenForm(props: ChildrenFormProps) {
                 size[0] > 0 ? size[0] : -size[0],
                 size[1] > 0 ? size[1] : -size[1]
             ];
+            const {color, randomColor, borderColor, borderStyle = 'solid', borderWidth = 0} = currentBrush.brushStyleParameters || {}
             dispatch(addChildren({
                 path: parentPath || '',
                 divState: {
@@ -90,11 +102,19 @@ export function ChildrenForm(props: ChildrenFormProps) {
                             absoluteSize[1] / parentSize[1] * 100,
                         ],
                         angle: 0,
-                        color: getRandomColor(),
-                        relativeSizeX: true,
-                        relativeSizeY: true,
-                        relativeStartY: true,
-                        relativeStartX: true,
+                        color: currentBrush.brushStyleParameters?.color || (currentBrush.brushStyleParameters?.randomColor && getRandomColor()) || '',
+                        startXUnit: SizeUnit.pc,
+                        startYUnit: SizeUnit.pc,
+                        sizeXUnit: SizeUnit.pc,
+                        sizeYUnit: SizeUnit.pc,
+                        borderStyle,
+                        borderWidth,
+                        borderColor,
+                        shadowInset: false,
+                        shadowXYOffset: [0,0],
+                        shadowBlur: 0,
+                        shadowSpread: 0,
+                        shadowColor: color || (randomColor && getRandomColor()) || '',
                     },
                     children: []
                 }
@@ -117,9 +137,9 @@ export function ChildrenForm(props: ChildrenFormProps) {
                 [styles.isParentInactiveStart]: isParentInactiveStart,
             }, className)}
             angle={parentAngle}
+            style={style}
             css={''}
         >
-            {/*{parentPath}*/}
             {children}
             {startPoint && size && (
                 <DivNew className={styles.newDiv} startPoint={startPoint} size={size}></DivNew>

@@ -16,6 +16,10 @@ import { ViewDiv } from "./components/ViewDiv";
 import { useHotkeys } from '@mantine/hooks';
 import { ActionCreators } from "redux-undo";
 import { selectActivePath } from "./store/activePath";
+import { ImageBrowser } from "./components/ImageBrowser";
+import { Brushes } from "./components/Brushes";
+import { DivForm } from "./components/DivForm/DivForm";
+import { ActiveDivFormContainer } from "./components/ActiveDivFormContainer";
 
 export interface LevelEditorProps {
 
@@ -78,17 +82,25 @@ export const LevelEditor = (function (LevelEditor: React.ComponentType<LevelEdit
             })}
             style={backgroundStyle}
         >
+            {/*<div className={styles.under}></div>*/}
+            {/*<div className={styles.right}>*/}
+            {/*    */}
 
-            {editorParams.view ? (
-                <ViewDiv isRoot state={root}/>
-            ) : (
-                <EditDiv isRoot state={root}/>
-            )}
+            {/*</div>*/}
 
-            <div className={styles.rightColumn}>
-                <DivTree/>
-            </div>
+
             <div className={styles.leftColumn}>
+
+                <For<EditorParams>
+                    className={styles.gameParamsForm}
+                    value={editorParams}
+                    onChange={(value: EditorParams) => dispatch(setEditorParams(value))}
+                >
+                    <CheckboxFor name="hideInactivePath"></CheckboxFor>
+                    <BlurEnterNumberInputFor name="inactivePathOpacity"></BlurEnterNumberInputFor>
+                    {/*<CheckboxFor name="draw"></CheckboxFor>*/}
+                    <CheckboxFor name="view"></CheckboxFor>
+                </For>
                 <For<GameParams>
                     className={styles.gameParamsForm}
                     value={gameParams}
@@ -99,18 +111,32 @@ export const LevelEditor = (function (LevelEditor: React.ComponentType<LevelEdit
                         getText={(i: any) => i} getValue={(i: any) => i} name="layout"
                         items={Object.values(Layout)}></SelectDropFor>
                 </For>
-                <For<EditorParams>
-                    className={styles.gameParamsForm}
-                    value={editorParams}
-                    onChange={(value: EditorParams) => dispatch(setEditorParams(value))}
-                >
-                    <CheckboxFor name="hideInactivePath"></CheckboxFor>
-                    <BlurEnterNumberInputFor name="inactivePathOpacity"></BlurEnterNumberInputFor>
-                    <CheckboxFor name="draw"></CheckboxFor>
-                    <CheckboxFor name="view"></CheckboxFor>
-
-                </For>
+                <ImageBrowser/>
+                <Brushes/>
             </div>
+            <div className={styles.editorViewport}>
+                <EditDiv isRoot state={root}/>
+
+                {editorParams.view && (
+                    <div className={styles.view}>
+                        <ViewDiv isRoot state={root}/>
+                    </div>
+                )}
+
+            </div>
+            <div className={styles.rightColumn}>
+
+                <DivForm className={styles.divForm} path={activePath}/>
+                <DivTree className={styles.divTree}/>
+            </div>
+
+            <ActiveDivFormContainer/>
+
+
+            {/*<div className={styles.leftBottom}>*/}
+            {/*</div>*/}
+            {/*<div className={styles.rightBottom}>*/}
+            {/*</div>*/}
         </div>
     );
 });

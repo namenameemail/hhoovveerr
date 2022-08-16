@@ -1,22 +1,28 @@
 import { AnyAction, createSlice, PayloadAction, ThunkAction } from "@reduxjs/toolkit";
-import { DivParameters, DivState, DivTreeState } from "./types";
-import { PATH_SPLITTER } from "./consts";
-import { EditorDispatch, EditorGetState, EditorState } from "../index";
+import { DivParameters, DivState, DivTreeState, SizeUnit } from "./types";
+import { EditorState } from "../index";
 import { setActivePath } from "../activePath";
-import { addByPath, deleteByPath, getByPath, getPathParentAndIndex, updateByPath } from "../../utils/tree";
+import {
+    addByPath,
+    deleteByPath,
+    getByPath,
+    getByPathWithParentAngle,
+    getPathParentAndIndex,
+    updateByPath
+} from "../../utils/tree";
 
 
 const initialState: DivTreeState = {
     root: {
         parameters: {
             startPoint: [0, 0],
-            size: [60, 60],
+            size: [100, 100],
             angle: 0,
-            color: 'pink',
-            relativeSizeX: true,
-            relativeSizeY: true,
-            relativeStartX: true,
-            relativeStartY: true,
+            color: 'white',
+            sizeXUnit: SizeUnit.pc,
+            sizeYUnit: SizeUnit.pc,
+            startXUnit: SizeUnit.pc,
+            startYUnit: SizeUnit.pc,
         },
 
         children: [],
@@ -102,7 +108,8 @@ export const divTreeSlice = createSlice({
 });
 
 export const selectDivTreeRoot = (state: EditorState) => state.divTree.present.root;
-export const selectDivByPath = (path: string) => (state: EditorState) => getByPath(state.divTree.present.root, path);
+export const selectDivByPath = (path: string) => (state: EditorState): DivState | undefined => getByPath(state.divTree.present.root, path);
+export const selectDivByPathWithParentAngle = (path: string) => (state: EditorState) => getByPathWithParentAngle(state.divTree.present.root, path);
 
 export const {
     setRoot,

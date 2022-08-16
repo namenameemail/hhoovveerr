@@ -10,7 +10,7 @@ const initialState: EditorParams = {
 }
 
 export const editorParamsSlice = createSlice({
-    name: 'divTree',
+    name: 'editorParams',
     initialState,
     reducers: {
         setEditorParams: (state: EditorParams, action: PayloadAction<EditorParams>) => {
@@ -22,7 +22,5 @@ export const editorParamsSlice = createSlice({
 export const {
     setEditorParams
 } = editorParamsSlice.actions;
-
-// export const
 
 export const selectEditorParams = (state: EditorState) => state.editorParams;

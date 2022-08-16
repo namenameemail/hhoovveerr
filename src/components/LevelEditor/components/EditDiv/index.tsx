@@ -1,34 +1,18 @@
-import styles from '../../styles.module.css';
-import cn from 'classnames';
-import {
-    getRandomColor,
-    DivDragHandler,
-    DragEvent,
-} from 'bbuutoonnss';
-import React, { ReactNode, RefObject, useCallback, useRef } from "react";
-import { DivState, Vec } from "../../store/divTree/types";
-import { useDispatch, useSelector } from "react-redux";
-import {
-    addChildren,
-    changeColor, deleteDiv, divDown, divUp,
-    updateDiv, updateDivParameters
-} from "../../store/divTree";
-import {
-    DivParameters
-} from "../../store/divTree/types";
+import { DivDragHandler, DragEvent, } from 'bbuutoonnss';
+import React, { RefCallback, RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { DivParameters, DivState, SizeUnit, Vec } from "../../store/divTree/types";
+import { useSelector } from "react-redux";
+import { updateDiv, updateDivParameters } from "../../store/divTree";
 import { selectEditorParams } from "../../store/editorParams";
 import { ChildrenForm } from "./ChildrenForm";
-import {
-    BlurEnterTextInputFor,
-    CheckboxFor,
-    For,
-    NumberDragFor,
-    ObjectFor,
-    Vec2DragFor,
-    Vec2DragPointerLockFor
-} from "../../../For";
 import { selectActivePath } from "../../store/activePath";
-import { useEditorDispatch } from "../../store";
+import { useEditorDispatch, useEditorSelector } from "../../store";
+import { DivStyles, getStyles } from "./configureStyles";
+import { selectImages } from "../../store/assets";
+import { DivForm } from "../DivForm/DivForm";
+import styles from "./styles.module.css";
+import { refService } from "./refService";
+
 
 export interface EditDivProps extends Omit<React.HTMLProps<HTMLDivElement>, 'size' | 'onChange'> {
     parentDivRef?: RefObject<HTMLDivElement>;
@@ -37,6 +21,7 @@ export interface EditDivProps extends Omit<React.HTMLProps<HTMLDivElement>, 'siz
     state: DivState;
     parentAngle?: number;
     path?: string;
+    parentDiv?: DivState;
     isParentActivePath?: boolean;
     isGrandParentActivePath?: boolean;
     onChange?: (path: string, index: number, state: DivState) => void;
@@ -48,6 +33,7 @@ export function EditDiv(props: EditDivProps) {
         parentDivRef,
         isRoot,
         state,
+        parentDiv,
         index,
         parentAngle = 0,
         isParentActivePath,
@@ -59,8 +45,17 @@ export function EditDiv(props: EditDivProps) {
     } = props;
 
 
-    const divRef = useRef<HTMLDivElement>(null);
+    const divRef = useRef<HTMLDivElement | null>(null);
     // isRoot && console.log('EditDiv', state.children.length);
+
+    const setDivRef: RefCallback<HTMLDivElement> = useCallback((node) => {
+        divRef.current = node;
+        refService.registerRef(path, divRef, parentAngle)
+    }, [divRef, path, parentAngle]);
+
+    useEffect(() => {
+        refService.registerRef(path, divRef, parentAngle)
+    }, [divRef, path, parentAngle])
 
     const activePath = useSelector(selectActivePath);
     const dispatch = useEditorDispatch();
@@ -73,8 +68,8 @@ export function EditDiv(props: EditDivProps) {
 
     const {
         parameters: {
-            color, size, startPoint, angle,
-            relativeStartX, relativeSizeX, relativeStartY, relativeSizeY
+            color, size, startPoint, angle, text,
+            // relativeStartX, relativeSizeX, relativeStartY, relativeSizeY
         }, children
     } = state;
 
@@ -97,163 +92,177 @@ export function EditDiv(props: EditDivProps) {
     const handleChildrenDivChange = useCallback((path: string, index: number, divState: DivState) => {
         dispatch(updateDiv({ path, divState }));
     }, []);
-    const handleDivParamsChange = useCallback((divParams: DivParameters) => {
-        dispatch(updateDivParameters({ path, divParams }));
+    const handleDivParamsChange = useCallback((divParams: DivParameters, name?: string, isIntermediate?: boolean) => {
+        dispatch(updateDivParameters({ path, divParams, nohistory: isIntermediate }));
     }, [path, state]);
 
-    const handleDivSizeChange = useCallback((nohistory: boolean, { x, y }: DragEvent, e: MouseEvent, savedSize?: Vec) => {
-        if (!parentDivRef?.current || savedSize === undefined) {
+    const handleDivSizeChange = useCallback(({ x, y, isDragEnd }: DragEvent, e: MouseEvent, savedSize?: Vec) => {
+
+        if (savedSize === undefined) {
             return;
         }
 
-        const parentSize: Vec = [parentDivRef.current.offsetWidth, parentDivRef.current.offsetHeight];
+        // const viewSize: Vec = [window.innerWidth, window.innerHeight];
+        const rootSize: Vec = [refService.refs[''].ref.current?.offsetWidth || 0, refService.refs[''].ref.current?.offsetHeight || 0];
+
+        const getValueChange: { [key: string]: (value: number, parentSize: number, viewSize: Vec) => number } = {
+            ['px']: (size: number, parentSize: number, viewSize: Vec) => (size),
+            ['%']: (size: number, parentSize: number, viewSize: Vec) => size / parentSize * 100,
+
+            ['vw']: (size: number, parentSize: number, viewSize: Vec) => (size / viewSize[0] * 100),
+            ['vh']: (size: number, parentSize: number, viewSize: Vec) => (size / viewSize[1] * 100),
+        };
+
+
+        const { borderWidth: parentBorderWidth = 0 } = parentDiv?.parameters || {};
+        const parentSize: Vec = parentDivRef?.current
+            ? [parentDivRef.current.offsetWidth - 2 * parentBorderWidth, parentDivRef.current.offsetHeight - 2 * parentBorderWidth]
+            : rootSize;
 
         dispatch(updateDivParameters({
             path,
             divParams: {
                 ...state.parameters,
                 size: [
-                    Math.max(0, savedSize[0] + x / parentSize[0] * 100),
-                    Math.max(0, savedSize[1] + y / parentSize[1] * 100)
+                    Math.max(0, savedSize[0] + getValueChange[state.parameters.sizeXUnit](x, parentSize[0], rootSize)),
+                    Math.max(0, savedSize[1] + getValueChange[state.parameters.sizeYUnit](y, parentSize[1], rootSize)),
                 ]
             },
-            nohistory
+            nohistory: !isDragEnd
         }));
-    }, [path, index, state, parentDivRef]);
-    const handleDivSizeChangeMove = useCallback((dragEvent: DragEvent, e: MouseEvent, savedSize?: Vec) => {
-        handleDivSizeChange(true, dragEvent, e, savedSize);
-    }, [handleDivSizeChange]);
-    const handleDivSizeChangeUp = useCallback((dragEvent: DragEvent, e: MouseEvent, savedSize?: Vec) => {
-        handleDivSizeChange(false, dragEvent, e, savedSize);
-    }, [handleDivSizeChange]);
+    }, [path, index, state, parentDivRef, parentDiv]);
 
-
-
-    const handleDivStartPointChange = useCallback((nohistory: boolean, { x, y }: DragEvent, e: MouseEvent, savedStart?: Vec) => {
-        if (!parentDivRef?.current || savedStart === undefined) {
+    const handleDivShadowXYOffsetChange = useCallback(({
+                                                           x,
+                                                           y,
+                                                           isDragEnd
+                                                       }: DragEvent, e: MouseEvent, savedSize?: Vec) => {
+        if (savedSize === undefined) {
             return;
         }
 
-        const parentSize: Vec = [parentDivRef.current.offsetWidth, parentDivRef.current.offsetHeight];
 
+        dispatch(updateDivParameters({
+            path,
+            divParams: {
+                ...state.parameters,
+                shadowXYOffset: [
+                    savedSize[0] + x,
+                    savedSize[1] + y
+                ]
+            },
+            nohistory: !isDragEnd
+        }));
+    }, [path, index, state, parentDivRef, parentDiv]);
+
+
+    const handleDivStartPointChange = useCallback((event: DragEvent, e: MouseEvent, savedStart?: Vec) => {
+
+        if (savedStart === undefined) {
+            return;
+        }
+
+        const { x, y, isDragStart, isDragEnd } = event;
+        // const viewSize: Vec = [window.innerWidth, window.innerHeight];
+        const rootSize: Vec = [refService.refs[''].ref.current?.offsetWidth || 0, refService.refs[''].ref.current?.offsetHeight || 0];
+
+        const getValueChange: { [key: string]: (value: number, parentSize: number, viewSize: Vec) => number } = {
+            ['px']: (size: number, parentSize: number, viewSize: Vec) => (size),
+            ['%']: (size: number, parentSize: number, viewSize: Vec) => size / parentSize * 100,
+
+            ['vw']: (size: number, parentSize: number, viewSize: Vec) => (size / viewSize[0] * 100),
+            ['vh']: (size: number, parentSize: number, viewSize: Vec) => (size / viewSize[1] * 100),
+        };
+
+
+        const { borderWidth = 0 } = parentDiv?.parameters || {};
+        const parentSize: Vec = parentDivRef?.current
+            ? [parentDivRef.current.offsetWidth - 2 * borderWidth, parentDivRef.current.offsetHeight - 2 * borderWidth]
+            : rootSize;
 
         dispatch(updateDivParameters({
             path,
             divParams: {
                 ...state.parameters,
                 startPoint: [
-                    savedStart[0] + x / parentSize[0] * 100,
-                    savedStart[1] + y / parentSize[1] * 100
+                    savedStart[0] + getValueChange[state.parameters.startXUnit](x, parentSize[0], rootSize),
+                    savedStart[1] + getValueChange[state.parameters.startYUnit](y, parentSize[1], rootSize)
                 ]
             },
-            nohistory
+            nohistory: !isDragEnd,
         }));
-    }, [path, index, state, parentDivRef]);
+    }, [path, index, state, parentDivRef, parentDiv]);
 
 
-    const handleDivStartPointChangeMove = useCallback((event: DragEvent, e: MouseEvent, savedStart?: Vec) => {
-        handleDivStartPointChange(true, event, e, savedStart)
-    }, [handleDivStartPointChange]);
-
-
-    const handleDivStartPointChangeUp = useCallback((event: DragEvent, e: MouseEvent, savedStart?: Vec) => {
-        handleDivStartPointChange(false, event, e, savedStart)
-    }, [handleDivStartPointChange]);
+    const images = useEditorSelector(selectImages);
+    const [divStyles, setDivStyles] = useState<DivStyles | null>(null);
 
 
 
-    const handleDivAngleChange = useCallback(({ x, y }: DragEvent, e: MouseEvent, savedStart?: number) => {
+    const resizeHandler = useCallback(() => {
+        const rootSize: Vec = [refService.refs['']?.ref.current?.offsetWidth || 0, refService.refs['']?.ref.current?.offsetHeight || 0];
+        setDivStyles(getStyles(state.parameters, true, images, rootSize, isRoot))
+    }, [state.parameters, images, isRoot])
 
-
-        dispatch(updateDivParameters({
-            path,
-            divParams: {
-                ...state.parameters,
-                angle: Math.max(0, (savedStart || 0) - y)
-            }
-        }));
-    }, [path, state]);
-
-    const handleDelete = useCallback(() => {
-        dispatch(deleteDiv({ path }));
-    }, [path]);
-    const handleUp = useCallback(() => {
-        dispatch(divUp({ path }));
-    }, [path]);
-    const handleDown = useCallback(() => {
-        dispatch(divDown({ path }));
-    }, [path]);
-
+    useEffect(() => {
+        resizeHandler()
+        window.addEventListener('resize', resizeHandler)
+        return () => {
+            window.removeEventListener('resize', resizeHandler)
+        }
+    }, [resizeHandler])
     return (
         <div
             style={{
-                width: size[0] + (relativeSizeX ? '%' : 'px'),
-                height: size[1] + (relativeSizeY ? '%' : 'px'),
-                left: startPoint[0] + (relativeStartX ? '%' : 'px'),
-                top: startPoint[1] + (relativeStartY ? '%' : 'px'),
-                border: '1px solid rgba(0, 0,0,.2)',
+                ...divStyles?.origin,
                 opacity,
             }}
             onMouseDown={handleMouseDown}
         >
             <DivDragHandler<Vec>
-                style={{
-                    position: 'absolute',
-                    width: '16px',
-                    height: '16px',
-                    right: '-8px',
-                    bottom: '-8px',
-                    background: 'transparent',
-                    // border: '1px solid rgba(0, 0,0,.4)',
-                    cursor: 'nwse-resize'
-                }}
+                className={styles.sizeHandler}
                 angle={parentAngle}
                 saveValue={state.parameters.size}
-                onDrag={handleDivSizeChangeMove}
-                onDragEnd={handleDivSizeChangeUp}
+                onChange={handleDivSizeChange}
             />
             <DivDragHandler<Vec>
-                style={{
-                    position: 'absolute',
-                    width: '16px',
-                    height: '16px',
-                    top: '-8px',
-                    left: '-8px',
-                    background: 'transparent',
-                    // border: '1px solid rgba(0, 0,0,.4)',
-                    cursor: 'move'
-                }}
+                className={styles.posHandler}
                 angle={parentAngle}
                 saveValue={state.parameters.startPoint}
-                onDrag={handleDivStartPointChangeMove}
-                onDragEnd={handleDivStartPointChangeUp}
+                onChange={handleDivStartPointChange}
             />
+            <div style={divStyles?.borderOrigin}></div>
             <div
                 {...rest}
-                ref={divRef}
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    left: 0,
-                    top: 0,
-                    background: color,
-                    transform: `rotate(${angle}deg)`
-                }}
+                ref={setDivRef}
+                style={divStyles?.main}
                 onMouseDown={handleMouseDown}
             >
-                {/*{opacity}*/}
+                <div
+                    style={divStyles?.text}>
+                    {text}
+                </div>
+                {/*{parentAngle}*/}
                 <ChildrenForm
+                    parentRef={divRef}
                     isParentActiveLeaf={isActiveLeaf}
                     isParentActivePath={isActivePath}
                     isParentInactiveStart={isInactiveStart || false}
                     value={children}
+                    style={divStyles?.children}
                     parentAngle={parentAngle + angle}
                     parentPath={isRoot ? undefined : path}
                 >
+                    {isActivePath && <div style={divStyles?.borderMain}></div>}
+                    {isActiveLeaf && <div style={divStyles?.borderLeaf}></div>}
+                    {!isActivePath && !isActiveLeaf && <div style={divStyles?.borderInactive}></div>}
+
                     {(isActivePath || !editorParams.hideInactivePath) && (
                         children.map((divState, childIndex) => {
                             return (
                                 <EditDiv
+                                    key={childIndex}
+                                    parentDiv={state}
                                     state={divState}
                                     index={childIndex}
                                     path={path ? `${path}-${childIndex}` : `${childIndex}`}
@@ -262,7 +271,6 @@ export function EditDiv(props: EditDivProps) {
                                     isGrandParentActivePath={isParentActivePath || false}
                                     onChange={handleChildrenDivChange}
                                     parentDivRef={divRef}
-                                    // onSizeChange={handleChildrenDivSizeChange}
                                 />
                             );
                         })
@@ -270,24 +278,13 @@ export function EditDiv(props: EditDivProps) {
                 </ChildrenForm>
 
             </div>
-            {isActiveLeaf && (
-                <For<DivParameters>
-                    value={state.parameters}
-                    onChange={handleDivParamsChange}
-                >
-                    <BlurEnterTextInputFor name={'color'}></BlurEnterTextInputFor>
-                    <NumberDragFor name={'angle'} min={0}></NumberDragFor>
-                    <Vec2DragFor name={'size'}></Vec2DragFor>
-                    {/*<Vec2DragPointerLockFor name={'size'}></Vec2DragPointerLockFor>*/}
-                    <CheckboxFor name={'relativeSizeX'}></CheckboxFor>
-                    <CheckboxFor name={'relativeSizeY'}></CheckboxFor>
-                    <CheckboxFor name={'relativeStartX'}></CheckboxFor>
-                    <CheckboxFor name={'relativeStartY'}></CheckboxFor>
-                    <button onClick={handleDelete}>delete</button>
-                    <button onClick={handleDown}>down</button>
-                    <button onClick={handleUp}>up</button>
-                </For>
-            )}
+
+            {/*{isActiveLeaf && (*/}
+            {/*    <DivForm*/}
+            {/*        className={styles.form}*/}
+            {/*        path={path}*/}
+            {/*    />*/}
+            {/*)}*/}
         </div>
     );
 }

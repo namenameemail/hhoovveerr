@@ -1,10 +1,14 @@
 import styles from '../../styles.module.css';
 import cn from 'classnames';
-import React, { CSSProperties, useCallback } from "react";
+import React, { CSSProperties, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectEditorParams } from "../../store/editorParams";
 import { DivState } from "../../store/divTree/types";
 import { DivHover } from "../../../DivHover/DivHover";
+import { useDivStyle } from "../StyleDiv/useDivStyle";
+import { getStyles } from "./configureStyles";
+import { useEditorSelector } from "../../store";
+import { selectImages } from "../../store/assets";
 
 
 export interface ViewDivProps {
@@ -20,43 +24,31 @@ export function ViewDiv(props: ViewDivProps) {
     } = props;
 
 
-    const { parameters: {
-        color, size, startPoint, angle,
-        relativeSizeX,
-        relativeSizeY,
-        relativeStartX,
-        relativeStartY,
-    }, children } = state;
+    const { parameters, children } = state;
 
+    const images = useEditorSelector(selectImages)
 
-    const editorParams = useSelector(selectEditorParams);
+    const divStyles = useMemo(() => getStyles(parameters, true, images), [state.parameters])
 
-    //
-    // const isInactiveStart = isGrandParentActivePath && !isParentActivePath
+    const style = useMemo(() => {
+        return {
+            ...(isRoot ? ({
+                position: 'relative',
+            }) : ({
+                position: 'absolute',
+            })),
+            ...divStyles.main,
+        } as CSSProperties
+    }, [divStyles, isRoot])
 
-    // const opacity = isInactiveStart ? editorParams.inactivePathOpacity : 1
 
     return (
         <DivHover
-            style={{
-                width: size[0] + (relativeSizeX ? '%' : 'px'),
-                height: size[1] + (relativeSizeY ? '%' : 'px'),
-                left: startPoint[0] + (relativeStartX ? '%' : 'px'),
-                top: startPoint[1] + (relativeStartY ? '%' : 'px'),
-                background: color,
-                ...(isRoot ? ({
-
-                    position: 'relative',
-                }) : ({
-                    position: 'absolute',
-                })),
-                transform: `rotate(${angle}deg)`
-                // opacity
-            }}
+            // open
+            style={style}
         >
-            {children.length}
-            {children.map((state) => {
-                return <ViewDiv state={state}></ViewDiv>;
+            {children.map((state, index) => {
+                return <ViewDiv key={index} state={state}></ViewDiv>;
             })}
         </DivHover>
     );

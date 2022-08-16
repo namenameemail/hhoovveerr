@@ -6,6 +6,8 @@ import { editorParamsSlice } from "./editorParams";
 import undoable from 'redux-undo';
 import { activePathSlice } from "./activePath";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import { assetsSlice } from "./assets";
+import { brushesSlice } from "./brushes";
 
 const divTree = undoable(divTreeSlice.reducer, {
     limit: 10,
@@ -20,6 +22,8 @@ export const store = configureStore({
         activePath: activePathSlice.reducer,
         gameParams: gameParamsSlice.reducer,
         editorParams: editorParamsSlice.reducer,
+        assets: assetsSlice.reducer,
+        brushes: brushesSlice.reducer,
     }
 });
 

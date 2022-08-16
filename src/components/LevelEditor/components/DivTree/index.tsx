@@ -17,7 +17,7 @@ export function DivTree(props: DivTreeProps) {
 
     return (
         <div className={cn(styles.divTree, className)}>
-            <DivTreeNode state={root}/>
+            <DivTreeNode isRoot state={root}/>
         </div>
     );
 }
