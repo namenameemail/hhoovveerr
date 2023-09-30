@@ -1,0 +1,48 @@
+
+.children {
+    /*width: 100%;*/
+    /*height: 100%;*/
+    /*position: absolute;*/
+    /*left:0;*/
+    /*top: 0;*/
+    cursor: pointer;
+
+}
+.children.isParentActivePath {
+    outline: 2px dotted transparent;
+    /*outline: 2px dotted black;*/
+    /*border: 1px dotted white;*/
+    opacity: 1;
+    /*box-sizing: border-box;*/
+
+}
+.children.isParentActiveLeaf {
+    /*border: none;*/
+    opacity: 1;
+    box-sizing: border-box;
+    outline: 2px dotted transparent;
+    /*outline: 2px dotted black;*/
+    /*border: 1px dotted white;*/
+    cursor: crosshair;
+
+}
+.children.isParentInactiveStart {
+
+
+}
+
+.children.disabled {
+    pointer-events: none;
+}
+
+
+.children > div {
+    position: absolute;
+}
+
+.newDiv {
+    border: 1px solid rgba(0,0,0,0.6);
+    outline: 1px solid rgba(255,255,255,0.6);
+    background: transparent;
+    box-sizing: border-box;
+}

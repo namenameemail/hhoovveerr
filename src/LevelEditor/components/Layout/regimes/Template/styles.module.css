@@ -1,0 +1,241 @@
+.levelEditor {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    /*padding: 7px 0;*/
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+
+    background: white;
+    /*background: white;*/
+
+    flex-direction: column;
+    position: relative;
+    /*border: 1px solid red;*/
+}
+
+.firstRow {
+    display: flex;
+    width: 100%;
+    height: 30px;
+    justify-content: space-between;
+    /*border-bottom: 1px solid black;*/
+
+    flex: 0 0 auto;
+    position: relative;
+}
+.firstRowRight {
+    /*overflow-x: scroll;*/
+}
+.firstRowLeft {
+    flex: 0 0 auto;
+    display: flex;
+    /*width: 100%;*/
+    align-items: flex-end;
+
+}
+.secondRow {
+    width: 100%;
+    height: calc(100% - 30px);
+    display: flex;
+
+    flex: 1 0 auto;
+    position: relative;
+    /*border: 1px solid greenyellow;*/
+    box-sizing: border-box;
+}
+.editorViewport {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    position: relative;
+
+    padding: 6px 0 6px 12px;
+    box-sizing: border-box;
+}
+.hidden {
+    opacity: 0;
+}
+
+.view {
+    position: absolute;
+    left: 0;
+    top:0;
+
+    padding: 6px 0 6px 12px;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+}
+.children {
+    /*width: 100%;*/
+    /*height: 100%;*/
+    /*position: absolute;*/
+    /*left:0;*/
+    /*top: 0;*/
+    cursor: pointer;
+
+}
+.children.isParentActivePath {
+    outline: 2px dotted transparent;
+    /*outline: 2px dotted black;*/
+    /*border: 1px dotted white;*/
+    opacity: 1;
+    /*box-sizing: border-box;*/
+
+}
+.children.isParentActiveLeaf {
+    /*border: none;*/
+    opacity: 1;
+    box-sizing: border-box;
+    outline: 2px dotted transparent;
+    /*outline: 2px dotted black;*/
+    /*border: 1px dotted white;*/
+    cursor: crosshair;
+
+}
+.children.isParentInactiveStart {
+
+
+}
+
+.children.disabled {
+    pointer-events: none;
+}
+
+
+.children > div {
+    position: absolute;
+}
+
+.newDiv {
+    border: 1px solid rgba(0,0,0,0.6);
+    outline: 1px solid rgba(255,255,255,0.6);
+    background: transparent;
+    box-sizing: border-box;
+}
+/**/
+
+.div0 {
+    width: 100%;
+    height: 100%;
+    /*transform: rotate(45deg);*/
+    background: white;
+    position: relative;
+}
+
+.leftColumn {
+    display: flex;
+    flex-direction: column;
+
+}
+.gameParamsForm {
+    /*border: 1px solid black;*/
+    /*background: white;*/
+    /*padding: 4px 6px;*/
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 8px;
+}
+.gameParamsForm > *:not(:nth-last-child(1)) {
+    margin-right: 10px;
+}
+.gameParamsForm label {
+    display: flex;
+}
+
+.opacity {
+    width: 50px;
+}
+
+.block {
+    display: flex;
+    border: 1px solid black;
+    background: transparent;
+    padding: 0 4px;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+
+.leftBottom {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    left: 0;
+    bottom:0;
+}
+.rightBottom {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: 0;
+    bottom:0;
+}
+
+
+.under {
+    width: 100%;
+    display: flex;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    /*border: 1px solid red;*/
+    height: 40px;
+}
+.right {
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    /*border: 1px solid red;*/
+    height: 100%;
+}
+
+
+.rightColumn {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    height: 100%;
+    max-height: 100%;
+    /*border: 1px solid blue;*/
+    max-width: 350px;
+    width: 350px;
+    flex: 0 0 100%;
+    /*background: white;*/
+    padding-left: 10px;
+    box-sizing: border-box;
+    background: white;
+
+}
+
+.divForm {
+    /*border: 1px solid red;*/
+    max-height: 100%;
+    overflow: scroll;
+    box-sizing: border-box;
+    flex: 1 0 45%;
+    padding-right: 10px;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 20px;
+    align-items: flex-start;
+}
+
+.divTree {
+    /*border: 1px solid red;*/
+    max-height: 100%;
+    height: 100%;
+    overflow: scroll;
+    box-sizing: border-box;
+    flex: 1 0 55%;
+    padding-bottom: 20px;
+    background: white;
+    /*background: lightgray;*/
+}

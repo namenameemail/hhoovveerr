@@ -1,0 +1,108 @@
+.imageBrowser {
+    /*border: 1px solid black;*/
+    display: flex;
+    flex-direction: column;
+    /*background: white;*/
+    padding: 3px;
+    max-width: 200px;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+}
+
+.handler {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    width: 70px;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+}
+
+.handler small {
+    margin-left: 1px;
+    font-size: 10px;
+}
+
+.content {
+    position: absolute;
+    top: calc(100% + 1px);
+    left: -1px;
+    border: 1px solid black;
+    z-index: 1000;
+    width: 400px;
+    background: white;
+    max-height: 50vh;
+    overflow-y: scroll;
+    display: none;
+}
+
+.open .content {
+    display: flex;
+    flex-direction: column;
+}
+
+.open .handler {
+    font-weight: bold;
+}
+
+
+.images {
+    display: flex;
+    flex-direction: column;
+}
+
+.image {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    overflow: hidden;
+    align-items: flex-start;
+    border-bottom: 1px solid black;
+    padding: 2px 0 2px 10px;
+    box-sizing: border-box;
+
+}
+
+
+.image button {
+    opacity: 0;
+    cursor: pointer;
+}
+.image:hover button {
+    opacity: 1;
+}
+.image > div {
+    text-overflow: ellipsis;
+
+    overflow: hidden;
+}
+
+.image > .imageName {
+    /*border: 1px solid red;*/
+    flex: 1 1 auto;
+    overflow-wrap: anywhere;
+}
+
+.fileInput {
+
+    padding: 0 10px 3px;
+    border-bottom: 1px solid black;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.fileInput input {
+    display: block;
+    width: auto;
+    height: auto;
+    position: relative;
+    opacity: 1;
+    z-index: 1;
+}
+
+.fileInput label {
+    display: none;
+}
+

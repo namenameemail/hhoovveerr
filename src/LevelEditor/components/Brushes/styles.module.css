@@ -1,0 +1,89 @@
+
+
+.brushesBlock {
+    display: flex;
+    border: 1px solid black;
+    height: 100%;
+    box-sizing: border-box;
+    align-items: center;
+    padding: 2px 4px;
+    flex-direction: row-reverse;
+}
+.brushesBlock button {
+    margin-right: 4px;
+
+}
+.brushes {
+    display: flex;
+    flex-direction: row-reverse;
+}
+.brush {
+    margin: 0;
+    border: 2px solid transparent;
+    box-sizing: border-box;
+    position: relative;
+    cursor: pointer;
+}
+
+.currentBrush {
+     border: 2px dotted black ;
+ }
+
+.brushForm {
+    position: absolute;
+    top: 100%;
+    width: 157px;
+    right: 0;
+    box-sizing: border-box;
+    z-index: 1000;
+    border: 1px solid black;
+    background: white;
+    padding: 0px 10px;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+
+
+}
+
+
+.brushForm > * {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    height: 20px;
+}
+
+.brushForm > * > * {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+}
+.brushForm input {
+    height: 20px;
+}
+.brushForm div {
+    display: flex;
+}
+
+.brushForm span {
+    display: flex;
+    height: 20px;
+}
+.brushForm .header {
+    /*font-size: 14px;*/
+    /*opacity: 0.5;*/
+    /*border-top: 1px solid black;*/
+    margin-top: 6px;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+}
+.checkbox label {
+    display: flex;
+    align-items: center;
+}
+.checkbox input {
+    margin-left: 0;
+}

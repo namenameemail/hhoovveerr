@@ -1,0 +1,47 @@
+.export {
+    display: flex;
+    flex-direction: column;
+    padding: 0 8px;
+    max-width: 200px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.modal {
+    padding: 0 10px;
+    position: absolute;
+    top: calc(100% + 1px);
+    left: 0;
+    z-index: 100;
+    border: 1px solid black;
+    background: white;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column;
+    display: none;
+}
+.open .modal {
+    display: flex;
+}
+.handler {
+    user-select: none;
+    width: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.open .handler {
+    font-weight: bold;
+}
+.form {
+
+}
+.buttons {
+
+}
+
+.textInput {
+    margin-bottom: 3px;
+}

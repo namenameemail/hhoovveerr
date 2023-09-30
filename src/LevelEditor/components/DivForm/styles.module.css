@@ -1,0 +1,73 @@
+.divFormContainer {
+    /*width: 100%;*/
+    display: flex;
+    flex-direction: column;
+    /*border: 1px solid blue;*/
+}
+.divForm {
+    /*width: 100%;*/
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+.divForm > *:not(.divForm) {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+}
+
+.divForm > * > * {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+}
+.divForm input {
+    height: 20px;
+}
+.divForm div {
+    display: flex;
+}
+
+.divForm span {
+    display: flex;
+    height: 20px;
+}
+.divForm .header {
+    font-weight: bold;
+    margin-bottom: 6px;
+    /*font-size: 14px;*/
+    /*opacity: 0.5;*/
+    /*border-top: 1px solid black;*/
+    margin-top: 6px;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+}
+.checkbox label {
+    display: flex;
+    align-items: center;
+}
+.checkbox input {
+    margin-left: 0;
+}
+
+.buttons {
+    margin-top: 12px;
+    display: flex;
+    width: auto;
+    align-items: flex-start;
+
+    justify-content: flex-start;
+}
+
+.path {
+    margin-bottom: 4px;
+}
+
+.receiverForm {
+    border: 1px solid red;
+    position: relative;
+    height: auto;
+}
