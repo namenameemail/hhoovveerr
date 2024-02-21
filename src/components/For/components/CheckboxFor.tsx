@@ -17,14 +17,14 @@ export function CheckboxFor(props: CheckboxForProps) {
     }, [handleChange, value]);
 
     return (
-        <div>
-            <label className={className}>
+        <div className={className}>
+            <label>
                 <input
                     type="checkbox"
                     checked={value}
                     onChange={handleInputChange}
                 />
-                {text || name}
+                <span>{text || name}</span>
             </label>
         </div>
     );

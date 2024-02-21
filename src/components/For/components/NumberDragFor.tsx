@@ -2,7 +2,7 @@ import { useForField } from "../context";
 import { useCallback } from "react";
 
 import {
-    DivDragHandler,
+    DragHandler,
     DragEvent,
 } from "bbuutoonnss";
 
@@ -46,11 +46,12 @@ export function NumberDragFor(props: NumberDragForProps) {
         );
     }, [handleChange, min, direction]);
     return (
-        <DivDragHandler<number>
+        <DragHandler<number>
             angle={angle}
             saveValue={value}
             onChange={handleDragChange}
             className={className}
-        >{text || name} {value}</DivDragHandler>
+            pointerLock={false}
+        >{text || name} {value}</DragHandler>
     );
 }

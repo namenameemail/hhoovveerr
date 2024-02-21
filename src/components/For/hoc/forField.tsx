@@ -5,13 +5,13 @@ export interface ForFieldProps {
     name: string;
 }
 
-export interface FieldProps<TValue = any> {
+export type FieldProps<TValue = any, TRestProps extends ForFieldProps = ForFieldProps> = TRestProps & {
     value: TValue;
     onChange: (value: TValue) => void;
 }
 
-export function forField<TValue = any>(Component: React.ComponentType<FieldProps>) {
-    return (props: ForFieldProps & Omit<ComponentProps<typeof Component>, 'value' | 'onChange'>) => {
+export function forField<TValue = any, TRestProps extends ForFieldProps = ForFieldProps>(Component: React.ComponentType<FieldProps<TValue, TRestProps>>) {
+    return (props: TRestProps) => {
         const { name } = props;
         const { value, handleChange } = useForField<TValue>(name);
 

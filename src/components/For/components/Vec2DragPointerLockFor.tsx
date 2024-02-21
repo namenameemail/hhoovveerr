@@ -1,10 +1,10 @@
 import { useForField } from "../context";
-import { Vec } from "../../LevelEditor/store/divTree/types";
+import { Vec } from "../../../LevelEditor/store/currentProject/tree/types";
 import React, { ReactNode, useCallback } from "react";
 
 import {
     DragEvent,
-    DivDragPointerLockHandler,
+    DragHandler,
 } from "bbuutoonnss";
 
 export interface Vec2DragPointerLockForProps {
@@ -25,10 +25,10 @@ export function Vec2DragPointerLockFor(props: Vec2DragPointerLockForProps) {
     }, [handleChange]);
 
     return (
-        <DivDragPointerLockHandler<[number, number]>
+        <DragHandler<[number, number]>
             saveValue={value}
             angle={angle || 0}
             onChange={handleDrag}
-        >{children || (<>{text || name} {angle} {value?.[0].toFixed(0)},{value?.[1].toFixed(0)}</>)}</DivDragPointerLockHandler>
+        >{children || (<>{text || name} {angle} {value?.[0].toFixed(0)},{value?.[1].toFixed(0)}</>)}</DragHandler>
     );
 }

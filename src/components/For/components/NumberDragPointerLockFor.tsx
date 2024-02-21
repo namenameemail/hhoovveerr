@@ -4,7 +4,7 @@ import { getDist, NumberDragForDirection } from "./NumberDragFor";
 
 import {
     DragEvent,
-    DivDragPointerLockHandler,
+    DragHandler,
 } from "bbuutoonnss";
 
 export interface NumberDragPointerLockForProps {
@@ -34,11 +34,11 @@ export function NumberDragPointerLockFor(props: NumberDragPointerLockForProps) {
         );
     }, [handleChange, min, direction]);
     return (
-        <DivDragPointerLockHandler<number>
+        <DragHandler<number>
             angle={angle}
             saveValue={value}
             onChange={handleDragChange}
             className={className}
-        >{children || <>{text || name} {value}</>}</DivDragPointerLockHandler>
+        >{children || <>{text || name} {value}</>}</DragHandler>
     );
 }

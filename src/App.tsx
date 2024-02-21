@@ -1,7 +1,6 @@
-import { Level1 } from "./levels/Level1";
-import { LevelEditor } from "./components/LevelEditor";
+import { LevelEditor } from "./LevelEditor";
 import styles from './app.module.css';
-import { useState } from "react";
+import "./LevelEditor/services/db";
 
 export function App() {
 
@@ -9,7 +8,6 @@ export function App() {
     return (
         <div className={styles.app}>
             <LevelEditor/>
-            {/*<Level1/>*/}
         </div>
     );
 }

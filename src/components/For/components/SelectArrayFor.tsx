@@ -1,6 +1,6 @@
 import { useForField } from "../context";
 import { ChangeEvent, useCallback } from "react";
-import { SelectArray } from "../../SelectArray";
+import { SelectArray } from "../../inputs/SelectArray";
 
 export type SelectArrayForProps = {
     name: string

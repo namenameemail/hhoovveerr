@@ -1,9 +1,9 @@
 import { useForField } from "../context";
-import { Vec } from "../../LevelEditor/store/divTree/types";
+import { Vec } from "../../../LevelEditor/store/currentProject/tree/types";
 import { useCallback } from "react";
 
 import {
-    DivDragHandler,
+    DragHandler,
     DragEvent,
 } from "bbuutoonnss";
 
@@ -23,11 +23,12 @@ export function Vec2DragFor(props: Vec2DragForProps) {
         savedValue && handleChange([savedValue[0] + x, savedValue[1] + y], !isDragEnd);
     }, [handleChange]);
     return (
-        <DivDragHandler<Vec>
+        <DragHandler<Vec>
             angle={angle}
             saveValue={value}
             onDrag={handleDragChange}
             className={className}
-        >{text || name} {value[0]},{value[1]}</DivDragHandler>
+            pointerLock={false}
+        >{text || name} {value[0]},{value[1]}</DragHandler>
     );
 }
