@@ -1,8 +1,8 @@
 import { RefCallback, MutableRefObject, useCallback, useEffect, useRef, useState } from "react";
-// import { getDivSizeById, refService } from "../refService";
+
 import { DivStyles, getStyles } from "../helpers/configureStyles";
 import {
-    DivBehaviourParameters,
+    DivBehaviorParameters,
     DivPositionParameters,
     DivStyleParameters,
     Vec
@@ -12,14 +12,13 @@ import { selectFonts, selectImages } from "../../../store/currentProject/assets"
 import { selectTreeRootId } from "../../../store/currentProject/tree";
 import { useDivRefContext } from "../../Preview/context/DivRefContext";
 
-export const useDivStyles = (positionParameters: DivPositionParameters, styleParameters: DivStyleParameters, behaviourParameters: DivBehaviourParameters, isRoot?: boolean, isInventoryItem?: boolean): DivStyles | null => {
+export const useDivStyles = (positionParameters: DivPositionParameters, styleParameters: DivStyleParameters, behaviorParameters: DivBehaviorParameters, isRoot?: boolean, isInventoryItem?: boolean): DivStyles | null => {
 
     const rootId = useEditorSelector(selectTreeRootId);
     const images = useEditorSelector(selectImages);
     const fonts = useEditorSelector(selectFonts);
-    const divRefContext = useDivRefContext();
-    const { refService: { current: refService } } = divRefContext;
-    const getRootSize = refService?.getDivSizeById(rootId) as () => Vec;
+    const { refService } = useDivRefContext();
+    const getRootSize = refService.getDivSizeById(rootId);
 
 
     const [divStyles, setDivStyles] = useState<DivStyles | null>(null);
@@ -31,7 +30,7 @@ export const useDivStyles = (positionParameters: DivPositionParameters, stylePar
         setDivStyles(getStyles({
             styleParameters,
             positionParameters,
-            behaviourParameters,
+            behaviorParameters,
 
             isBlendActive: true,
             images,
@@ -41,7 +40,7 @@ export const useDivStyles = (positionParameters: DivPositionParameters, stylePar
             isInventoryItem
         }));
     }, [styleParameters, positionParameters,
-        behaviourParameters, images, isRoot, isInventoryItem]);
+        behaviorParameters, images, isRoot, isInventoryItem]);
 
     useEffect(() => {
 

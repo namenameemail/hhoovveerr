@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
 import {
-    DivBehaviourParameters,
+    DivBehaviorParameters,
     DivPositionParameters,
     DivStyleParameters, ReceivableCollectableParameters,
     SizeUnit,
@@ -19,7 +19,7 @@ export interface DivStyles {
 export type StylesConfig = {
     styleParameters: DivStyleParameters
     positionParameters: DivPositionParameters
-    behaviourParameters: DivBehaviourParameters
+    behaviorParameters: DivBehaviorParameters
     isBlendActive: boolean,
     images: Asset[],
     fonts: Asset[],
@@ -34,7 +34,7 @@ export type StylesConfig = {
 export const getStyles = (stylesConfig: StylesConfig): DivStyles => {
     const {
         positionParameters,
-        behaviourParameters,
+        behaviorParameters,
         styleParameters,
         isBlendActive,
         images,
@@ -59,7 +59,7 @@ export const getStyles = (stylesConfig: StylesConfig): DivStyles => {
         collectableParameters: {
             inventorySize = [[0, SizeUnit.px], [0, SizeUnit.px]],
         },
-    } = behaviourParameters;
+    } = behaviorParameters;
     const {
         color,
         borderWidth = [0, SizeUnit.px],
@@ -107,12 +107,15 @@ export const getStyles = (stylesConfig: StylesConfig): DivStyles => {
             left,
             top,
         } : {}),
+        ...(isReceivedDiv && receiveParameters ? {
+            transform: `rotate(${receiveParameters.angle}deg)`,
+        } : {
+            transform: `rotate(${angle}deg)`,}),
         zIndex,
         position: isRoot || isSelectorItem || isInventoryItem ? 'relative' : 'absolute',
         display: 'flex',
         boxSizing: 'border-box',
 
-        transform: `rotate(${angle}deg)`,
         borderWidth: getNumberUnitCssValue(styleParameters.borderWidth),
         borderRadius: getNumberUnitCssValue(styleParameters.borderRadius),
         borderColor: styleParameters.borderColor,

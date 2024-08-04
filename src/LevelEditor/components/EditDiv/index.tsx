@@ -23,9 +23,9 @@ import styles from "./styles.module.css";
 import { Inventory } from "./components/Inventory";
 import { Vec2NumberUnitDrag } from "../../../components/inputs/Vec2NumberUnitDrag";
 import { useDivStyles } from "./hooks/useDivStyles";
-import { ViewDiv } from "../ViewDiv";
 import { useDivRefRegistration } from "../../services/divRefService/hooks/useDivRefRegistration";
-import { refService } from "../EditorCanvas/refService";
+import { useDivRefContext } from "../Preview/context/DivRefContext";
+import { ViewDiv } from "../ViewDiv/index";
 
 
 export interface EditDivProps extends Omit<React.HTMLProps<HTMLDivElement>, 'size'> {
@@ -54,6 +54,7 @@ export function EditDiv(props: EditDivProps) {
         ...rest
     } = props;
 
+    const { refService } = useDivRefContext();
 
     const dispatch = useEditorDispatch();
     const rootId = useEditorSelector(selectTreeRootId);
@@ -63,9 +64,9 @@ export function EditDiv(props: EditDivProps) {
 
 
     const [divRef, setDivRef] = useDivRefRegistration(refService, id, parentAngle);
-    const divStyles = useDivStyles(state.positionParameters, state.styleParameters, state.behaviourParameters, isRoot, isInventoryItem);
+    const divStyles = useDivStyles(state.positionParameters, state.styleParameters, state.behaviorParameters, isRoot, isInventoryItem);
 
-    console.log(id, state, divStyles)
+    // console.log(id, state, divStyles)
 
     const isActiveLeaf = id === activeElementId;
     const isActivePath = isRoot ? true : activePath.includes(id);
@@ -76,16 +77,7 @@ export function EditDiv(props: EditDivProps) {
 
     const getRootSize = refService.getDivSizeById(rootId);
 
-    const getSize = useCallback(() => {
-        const rootSize: Vec = getRootSize();
-
-        const { borderWidth: parentBorderWidth = [0, SizeUnit.px] } = state.styleParameters || {};
-        const size: Vec = divRef?.current
-            ? [divRef.current.offsetWidth - 2 * parentBorderWidth[0], divRef.current.offsetHeight - 2 * parentBorderWidth[0]]
-            : rootSize;
-
-        return size;
-    }, [state, divRef]);
+    const getSize = refService.getDivSizeById(id);
 
     const handleDivVec2ParameterChange = useCallback((value: Vec2NumberUnit, name?: string, isIntermediate?: boolean) => {
         name && dispatch(updateDivPositionParameters({
@@ -163,7 +155,7 @@ export function EditDiv(props: EditDivProps) {
                     {isActiveLeaf && <div style={divStyles?.borderLeaf}></div>}
                     {!isActivePath && !isActiveLeaf && <div style={divStyles?.borderInactive}></div>}
 
-                    {(isActivePath || editorParams.showInactivePath || state.behaviourParameters.isOpen) && (
+                    {(isActivePath || editorParams.showInactivePath || state.behaviorParameters.isOpen) && (
                         state.children.map((id, childIndex) => {
                             return (
                                 <EditDiv
@@ -179,16 +171,18 @@ export function EditDiv(props: EditDivProps) {
                         })
                     )}
                 </ChildrenForm>
-                {state.behaviourParameters.receiverParameters.receivableCollectables.map(divId => {
+                {state.behaviorParameters?.receiverParameters.receivableCollectables.map(divId => {
                     return (
-                        
-                        
-                        
+
+
                         <ViewDiv
+                            key={divId}
+
+
                             isReceivedDiv
                             id={divId}
                             activePath={activePath}
-                            receiveParameters={state.behaviourParameters.receiverParameters.receivableCollectablesParameters[divId]}
+                            receiveParameters={state.behaviorParameters.receiverParameters.receivableCollectablesParameters[divId]}
                         />
                     )
                 })}

@@ -13,11 +13,12 @@ import { DivId } from "../../../store/currentProject/tree/types";
 import { DivRefService } from "../../../services/divRefService";
 
 export type DivRefContextValue = {
-    refService: RefObject<DivRefService>
+    refServiceRef: RefObject<DivRefService>
+    refService: DivRefService
 
 }
 
-export const DivRefContext = createContext<DivRefContextValue | null>(null);
+export const DivRefContext = createContext<DivRefContextValue>({} as DivRefContextValue);
 
 export type DivRefProviderProps = {}
 
@@ -34,8 +35,13 @@ export function DivRefProvider(props: PropsWithChildren<DivRefProviderProps>) {
     const { children } = props;
 
     const value = useMemo(() => ({
-        refService
-    }), [refService]);
+        refServiceRef: refService,
+        refService: refService.current as DivRefService,
+        isActive,
+        // делаем приведение типа потому что выше сделано так,
+        // что потомки не рендерятся пока не создастся контекст
+        // чтобы не пришлось делать проерки на наличие контекста
+    }), [refService, isActive]);
 
     return (
         <DivRefContext.Provider value={value}>{isActive ? children : null}</DivRefContext.Provider>
@@ -45,8 +51,5 @@ export function DivRefProvider(props: PropsWithChildren<DivRefProviderProps>) {
 export function useDivRefContext(): DivRefContextValue {
 
 
-    return useContext(DivRefContext) as DivRefContextValue;
-    // делаем приведение типа потому что выше сделано так,
-    // что потомки не рендерятся пока не создастся контекст
-    // чтобы не пришлось делать проерки на наличие контекста
+    return useContext(DivRefContext);
 }

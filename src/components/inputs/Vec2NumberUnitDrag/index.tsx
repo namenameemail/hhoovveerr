@@ -75,6 +75,8 @@ export function Vec2NumberUnitDrag(props: Vec2NumberUnitDragProps) {
             [savedValue[1] + getValueChangeByUnit[yUnit || SizeUnit.px](getDist[direction](y, x), parentSize[1], rootSize), yUnit]
         ];
 
+        console.log(346, parentSize, rootSize, savedValue, nextValue)
+
         onChange(
             min === undefined ? nextValue : [
                 [Math.max(min, nextValue[0][0]), xUnit],

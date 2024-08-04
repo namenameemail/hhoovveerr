@@ -1,7 +1,7 @@
 import { RefCallback, MutableRefObject, useCallback, useEffect, useRef } from "react";
 import { DivRefService } from "../index";
 
-export const useDivRefRegistration = (refService: DivRefService | null, id: string, parentAngle: number): [
+export const useDivRefRegistration = (refService: DivRefService, id: string, parentAngle: number): [
     divRef: MutableRefObject<HTMLDivElement | null>,
     setDivRef: RefCallback<HTMLDivElement>
 ] => {
@@ -9,13 +9,13 @@ export const useDivRefRegistration = (refService: DivRefService | null, id: stri
 
     const setDivRef: RefCallback<HTMLDivElement> = useCallback((node) => {
         divRef.current = node;
-        refService?.registerRef(id, divRef, parentAngle);
+        refService.registerRef(id, divRef, parentAngle);
     }, [divRef, id, parentAngle, refService]);
 
     useEffect(() => {
-        refService?.registerRef(id, divRef, parentAngle);
+        refService.registerRef(id, divRef, parentAngle);
         return () => {
-            refService?.unregisterRef(id);
+            refService.unregisterRef(id);
         };
     }, [divRef, id, parentAngle, refService]);
 

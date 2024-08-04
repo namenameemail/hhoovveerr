@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import {
     CollectableParameters,
-    DivBehaviourParameters,
+    DivBehaviorParameters,
     DivPositionParameters,
     DivStyleParameters, ReceivableCollectableParameters, ReceiverParameters,
     SizeUnit,
@@ -27,7 +27,7 @@ import {
     selectParentDivById,
     updateDivStyleParameters,
     updateDivPositionParameters,
-    updateDivBehaviourParameters,
+    updateDivBehaviorParameters,
     selectActiveDivId,
     selectIdsPathById
 } from "../../store/currentProject/tree";
@@ -42,7 +42,6 @@ import { CollectableSelectFor } from "../CollectableSelect";
 import { ViewDiv } from "../ViewDiv";
 import { ReceivableForm } from "./ReceivableForm";
 import { useDivRefContext } from "../Preview/context/DivRefContext";
-// import { getDivSizeById, refService } from "../../services/divRefService";
 
 export interface DivFormProps {
     className?: string;
@@ -59,9 +58,8 @@ export function DivForm(props: DivFormProps) {
     const { className, id } = props;
     const rootId = useEditorSelector(selectTreeRootId);
 
-    const divRefContext = useDivRefContext();
-    const { refService: { current: refService } } = divRefContext;
-    const getRootSize = refService?.getDivSizeById(rootId) as () => Vec;
+    const { refService } = useDivRefContext();
+    const getRootSize = refService.getDivSizeById(rootId);
 
     const activeElementId = useEditorSelector(selectActiveDivId);
     const activePath = useEditorSelector(selectIdsPathById(activeElementId as string));
@@ -74,9 +72,9 @@ export function DivForm(props: DivFormProps) {
 
     const styleParameters = state?.styleParameters || {} as DivStyleParameters;
     const positionParameters = state?.positionParameters || {} as DivPositionParameters;
-    const behaviourParameters = state?.behaviourParameters || {} as DivBehaviourParameters; // чето сделать с приведением
-    const { ref: parentDivRef } = refService?.refs[state?.parent as string] || {};
-    const { ref: currentDivRef } = refService?.refs[state?.id as string] || {};
+    const behaviorParameters = state?.behaviorParameters || {} as DivBehaviorParameters; // чето сделать с приведением
+    const { ref: parentDivRef } = refService.refs[state?.parent as string] || {};
+    const { ref: currentDivRef } = refService.refs[state?.id as string] || {};
 
     const dispatch = useEditorDispatch();
 
@@ -86,48 +84,29 @@ export function DivForm(props: DivFormProps) {
     const handleDivPosParamsChange = useCallback((params: DivPositionParameters, name?: string, isIntermediate?: boolean) => {
         dispatch(updateDivPositionParameters({ id, params, nohistory: isIntermediate }));
     }, [id, styleParameters]);
-    const handleDivBehaveParamsChange = useCallback((params: DivBehaviourParameters, name?: string, isIntermediate?: boolean) => {
-        dispatch(updateDivBehaviourParameters({ id, params, nohistory: isIntermediate }));
+    const handleDivBehaveParamsChange = useCallback((params: DivBehaviorParameters, name?: string, isIntermediate?: boolean) => {
+        dispatch(updateDivBehaviorParameters({ id, params, nohistory: isIntermediate }));
     }, [id, styleParameters]);
     const handleCollectParamsChange = useCallback((collectableParameters: CollectableParameters, name?: string, isIntermediate?: boolean) => {
-        dispatch(updateDivBehaviourParameters({
+        dispatch(updateDivBehaviorParameters({
             id,
-            params: { ...behaviourParameters, collectableParameters },
+            params: { ...behaviorParameters, collectableParameters },
             nohistory: isIntermediate
         }));
-    }, [id, behaviourParameters]);
+    }, [id, behaviorParameters]);
 
     const handleReceiverParamsChange = useCallback((receiverParameters: ReceiverParameters, name?: string, isIntermediate?: boolean) => {
-        dispatch(updateDivBehaviourParameters({
+        dispatch(updateDivBehaviorParameters({
             id,
-            params: { ...behaviourParameters, receiverParameters },
+            params: { ...behaviorParameters, receiverParameters },
             nohistory: isIntermediate
         }));
-    }, [id, behaviourParameters]);
+    }, [id, behaviorParameters]);
 
+    const getParentSize = parentDiv?.id ? refService.getDivSizeById(parentDiv.id) : getRootSize;
 
-    const getParentSize = useCallback(() => {
-        const rootSize: Vec = getRootSize();
-
-        const { borderWidth: parentBorderWidth = [0, SizeUnit.px] } = parentDiv?.styleParameters || {};
-        const parentSize: Vec = parentDivRef?.current
-            ? [parentDivRef.current.offsetWidth - 2 * parentBorderWidth[0], parentDivRef.current.offsetHeight - 2 * parentBorderWidth[0]]
-            : rootSize;
-
-        return parentSize;
-    }, [parentDiv, parentDivRef]);
-
-    const getCurrentSize = useCallback(() => {
-        const rootSize: Vec = getRootSize();
-
-        const { borderWidth: parentBorderWidth = [0, SizeUnit.px] } = styleParameters || {};
-        const currentSize: Vec = currentDivRef?.current
-            ? [currentDivRef.current.offsetWidth - 2 * parentBorderWidth[0], currentDivRef.current.offsetHeight - 2 * parentBorderWidth[0]]
-            : rootSize;
-
-        return currentSize;
-    }, [styleParameters, currentDivRef]);
-
+    const getCurrentSize = refService.getDivSizeById(id);
+   
     const handleDelete = useCallback(() => {
         dispatch(deleteDiv({ id }));
     }, [id]);
@@ -182,8 +161,8 @@ export function DivForm(props: DivFormProps) {
                 </>)}
             </For>
 
-            <For<DivBehaviourParameters>
-                value={behaviourParameters}
+            <For<DivBehaviorParameters>
+                value={behaviorParameters}
                 onChange={handleDivBehaveParamsChange}
                 className={styles.divForm}
             >
@@ -191,16 +170,16 @@ export function DivForm(props: DivFormProps) {
                 <CheckboxFor className={styles.checkbox} name={'stopClickPropagation'} text={'stopClickPropagation'}/>
 
 
-                {!behaviourParameters.isOpen && (<>
+                {!behaviorParameters.isOpen && (<>
                     <SelectArrayFor name={'openEvent'} options={interactionEvent} title={'open event'}/>
                     <SelectArrayFor name={'closeEvent'} options={interactionEvent} title={'close event'}/>
                 </>)}
 
                 <div className={styles.header}>collectable</div>
                 <CheckboxFor className={styles.checkbox} name={'isCollectable'} text={' collectable'}/>
-                {behaviourParameters.isCollectable && (
+                {behaviorParameters.isCollectable && (
                     <For<CollectableParameters>
-                        value={behaviourParameters.collectableParameters}
+                        value={behaviorParameters.collectableParameters}
                         onChange={handleCollectParamsChange}
                         className={styles.divForm}
                     >

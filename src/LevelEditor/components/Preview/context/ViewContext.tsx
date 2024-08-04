@@ -1,6 +1,6 @@
 import { Context, createContext, PropsWithChildren, useCallback, useContext, useMemo, useRef, useState } from "react";
 import { DivId } from "../../../store/currentProject/tree/types";
-import { DivRefService } from "../../../services/divRefService";
+import { useDivRefContext } from "./DivRefContext";
 
 export type ViewContextState = {
     received: {
@@ -28,7 +28,7 @@ const initialState = {
 };
 
 export function ViewProvider(props: PropsWithChildren<ViewProviderProps>) {
-    const refService = useRef(new DivRefService());
+    const { refService } = useDivRefContext();
 
     const { children } = props;
 

@@ -2,7 +2,7 @@ import { AnyAction, createSlice, PayloadAction, ThunkAction } from "@reduxjs/too
 import {
     CollectableParameters,
     Div,
-    DivBehaviourParameters,
+    DivBehaviorParameters,
     DivId,
     DivPositionParameters,
     DivStyleParameters, ReceivableCollectableParameters,
@@ -53,19 +53,19 @@ export const treeSlice = createSlice({
                 positionParameters: params
             }));
         },
-        updateDivBehaviourParameters: (state: Tree, action: PayloadAction<{ params: DivBehaviourParameters, id: string, nohistory?: boolean }>) => {
+        updateDivBehaviorParameters: (state: Tree, action: PayloadAction<{ params: DivBehaviorParameters, id: string, nohistory?: boolean }>) => {
             const { id, params } = action.payload;
             state.div = updateById(state.div, id, (state: Div) => ({
                 ...state,
-                behaviourParameters: params
+                behaviorParameters: params
             }));
         },
         updateDivCollectableParameters: (state: Tree, action: PayloadAction<{ params: CollectableParameters, id: string, nohistory?: boolean }>) => {
             const { id, params } = action.payload;
             state.div = updateById(state.div, id, (state: Div) => ({
                 ...state,
-                behaviourParameters: {
-                    ...state.behaviourParameters,
+                behaviorParameters: {
+                    ...state.behaviorParameters,
                     collectableParameters: params
                 }
             }));
@@ -74,8 +74,8 @@ export const treeSlice = createSlice({
             const { id, params } = action.payload;
             state.div = updateById(state.div, id, (state: Div) => ({
                 ...state,
-                behaviourParameters: {
-                    ...state.behaviourParameters,
+                behaviorParameters: {
+                    ...state.behaviorParameters,
                     receiverParameters: params
                 }
             }));
@@ -84,12 +84,12 @@ export const treeSlice = createSlice({
             const { id, collectableId, params } = action.payload;
             state.div = updateById(state.div, id, (state: Div) => ({
                 ...state,
-                behaviourParameters: {
-                    ...state.behaviourParameters,
+                behaviorParameters: {
+                    ...state.behaviorParameters,
                     receiverParameters: {
-                        ...state.behaviourParameters.receiverParameters,
+                        ...state.behaviorParameters.receiverParameters,
                         receivableCollectablesParameters: {
-                            ...state.behaviourParameters.receiverParameters.receivableCollectablesParameters,
+                            ...state.behaviorParameters.receiverParameters.receivableCollectablesParameters,
                             [collectableId]: params
                         }
                     }
@@ -100,12 +100,12 @@ export const treeSlice = createSlice({
             const { id, collectableId } = action.payload;
             state.div = updateById(state.div, id, (state: Div) => ({
                 ...state,
-                behaviourParameters: {
-                    ...state.behaviourParameters,
+                behaviorParameters: {
+                    ...state.behaviorParameters,
                     receiverParameters: {
-                        ...state.behaviourParameters.receiverParameters,
+                        ...state.behaviorParameters.receiverParameters,
                         receivableCollectablesParameters: {
-                            ...state.behaviourParameters.receiverParameters.receivableCollectablesParameters,
+                            ...state.behaviorParameters.receiverParameters.receivableCollectablesParameters,
                             [collectableId]: getInitialDivReceivableCollectableParameters()
                         }
                     }
@@ -194,14 +194,14 @@ export const selectIdsPathById = (id: string) => (state: AppState): DivId[] => g
 export const selectOrderPathById = (id: string) => (state: AppState): string => getOrderPathById(state.currentProject.tree.present.div, id);
 export const selectActiveDivId = (state: AppState) => state.currentProject.tree.present.activeDivId;
 export const selectReceivableCollectableParams = (id: string, collectableId: string) => (state: AppState) => {
-    console.log(666, selectDivById(id)(state).behaviourParameters.receiverParameters.receivableCollectablesParameters)
-    return selectDivById(id)(state).behaviourParameters.receiverParameters.receivableCollectablesParameters[collectableId]
+    console.log(666, selectDivById(id)(state).behaviorParameters.receiverParameters.receivableCollectablesParameters)
+    return selectDivById(id)(state).behaviorParameters.receiverParameters.receivableCollectablesParameters[collectableId]
 };
 
 export const {
     updateDivStyleParameters,
     updateDivPositionParameters,
-    updateDivBehaviourParameters,
+    updateDivBehaviorParameters,
     updateDivCollectableParameters,
     updateDivReceiverParameters,
     updateDivReceivableCollectableParameters,

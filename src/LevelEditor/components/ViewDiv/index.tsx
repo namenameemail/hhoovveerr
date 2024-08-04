@@ -41,12 +41,10 @@ export function ViewDiv(props: ViewDivProps) {
         cycledDivsIds = [],
     } = props;
 
-    const divRefContext = useDivRefContext();
+    const { refService } = useDivRefContext();
     const viewContext = useViewContext();
 
     const isCycle = cycledDivsIds?.includes(id);
-
-    const { refService: { current: refService } } = divRefContext;
 
     const state = useEditorSelector(selectDivById(id));
 
@@ -64,12 +62,19 @@ export function ViewDiv(props: ViewDivProps) {
     const [divStyles, setDivStyles] = useState<DivStyles | null>(null);
 
     const resizeHandler = useCallback(() => {
-        const rootSize: Vec = [refService?.refs['']?.ref.current?.offsetWidth || 0, refService?.refs['']?.ref.current?.offsetHeight || 0];
+        // ??? why ''
+        const rootSize: Vec = [
+            refService.refs['']?.ref.current?.offsetWidth || 0, 
+            refService?.refs['']?.ref.current?.offsetHeight || 0
+        ];
+
+        console.log(445, rootSize, state)
+
         setDivStyles(
             getStyles(
                 {
                     styleParameters: state.styleParameters,
-                    behaviourParameters: state.behaviourParameters,
+                    behaviorParameters: state.behaviorParameters,
                     positionParameters: state.positionParameters,
                     isBlendActive: true,
                     images,
@@ -96,23 +101,23 @@ export function ViewDiv(props: ViewDivProps) {
     const [divRef, setDivRef] = useDivRefRegistration(
         refService,
         id,
-    refService?.refs[id]?.parentAngle || 0//??    parentAngle
+        refService.refs[id]?.parentAngle || 0//??    parentAngle
     );
 
     return (
         <DivHover
             ref={setDivRef}
             id={id}
-            open={(openActivePath ? isActivePath : false) || (state.behaviourParameters.isOpen && !isCycle)}
-            // open={state.behaviourParameters.isOpen}
+            open={(openActivePath ? isActivePath : false) || (state.behaviorParameters.isOpen && !isCycle)}
+            // open={state.behaviorParameters.isOpen}
             style={divStyles?.main}
-            openEvent={state.behaviourParameters.openEvent}
-            closeEvent={state.behaviourParameters.closeEvent}
-            collectEvent={state.behaviourParameters.collectableParameters.collectEvent}
+            openEvent={state.behaviorParameters.openEvent}
+            closeEvent={state.behaviorParameters.closeEvent}
+            collectEvent={state.behaviorParameters.collectableParameters.collectEvent}
             onCollect={viewContext.isActive ? (viewContext as ViewContextValue).onCollect : undefined}
             isReceiving={viewContext.isActive && !!(viewContext as ViewContextValue).state.currentActiveCollectableId}
             onReceive={viewContext.isActive ? (viewContext as ViewContextValue).onReceive : undefined}
-            stopClickPropagation={state.behaviourParameters.stopClickPropagation && !isSelectorItem}
+            stopClickPropagation={state.behaviorParameters.stopClickPropagation && !isSelectorItem}
             onClick={onClick}
             path={path}
         >
@@ -135,7 +140,7 @@ export function ViewDiv(props: ViewDivProps) {
             })}
 
             {/*// receivableCollectables*/}
-            {state.behaviourParameters.receiverParameters.receivableCollectables.map((childId, childIndex) => {
+            {state.behaviorParameters.receiverParameters.receivableCollectables.map((childId, childIndex) => {
                 const isCycleStart = !cycledDivsIds?.includes(childId) && idPath.includes(childId);
 
                 return (
@@ -145,7 +150,7 @@ export function ViewDiv(props: ViewDivProps) {
                             : cycledDivsIds
                         }
                         isReceivedDiv
-                        receiveParameters={state.behaviourParameters.receiverParameters.receivableCollectablesParameters[childId]}
+                        receiveParameters={state.behaviorParameters.receiverParameters.receivableCollectablesParameters[childId]}
                         openActivePath={openActivePath}
                         activePath={activePath}
                         key={childIndex}

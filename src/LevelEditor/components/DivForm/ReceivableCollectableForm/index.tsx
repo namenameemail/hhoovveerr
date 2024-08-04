@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import {
     CollectableParameters,
-    DivBehaviourParameters,
+    DivBehaviorParameters,
     DivPositionParameters,
     DivStyleParameters, ReceivableCollectableParameters, ReceiverParameters,
     SizeUnit,
@@ -27,12 +27,11 @@ import {
     selectParentDivById,
     updateDivStyleParameters,
     updateDivPositionParameters,
-    updateDivBehaviourParameters,
+    updateDivBehaviorParameters,
     selectActiveDivId,
     selectIdsPathById, selectReceivableCollectableParams, selectDivById, updateDivReceivableCollectableParameters
 } from "../../../store/currentProject/tree";
 import { useEditorDispatch, useEditorSelector } from "../../../store";
-// import { getDivSizeById, refService } from "../../EditDiv/refService";
 import { ImageSelectFor } from "../../ImageSelect";
 import { FontSelectFor } from "../../FontSelect";
 import styles from '../styles.module.css';
@@ -56,16 +55,22 @@ const shadowUnits = [SizeUnit.px, SizeUnit.vw, SizeUnit.vh];
 export function ReceivableCollectableForm(props: ReceivableCollectableFormProps) {
 
     const { className, id, collectableId } = props;
+
     const rootId = useEditorSelector(selectTreeRootId);
 
-    const divRefContext = useDivRefContext();
-    const { refService: { current: refService } } = divRefContext;
-    const getRootSize = refService?.getDivSizeById(rootId) as () => Vec;
+    const { refService } = useDivRefContext();
+    
+    const getRootSize = refService.getDivSizeById(rootId);
+    const getCurrentSize = refService.getDivSizeById(id);
 
+    const currentDiv = useEditorSelector(selectDivById(id));
     const activeElementId = useEditorSelector(selectActiveDivId);
     const activePath = useEditorSelector(selectIdsPathById(activeElementId as string));
 
     const parentDiv = useEditorSelector(selectParentDivById(id));
+
+    
+    // const getParentSize = parentDiv?.id ? refService.getDivSizeById(parentDiv.id) : getRootSize;
 
     const parameters = useEditorSelector(selectReceivableCollectableParams(id, collectableId));
     const { div: state, parentAngle } = useEditorSelector(selectDivByIdWithParentAngle(collectableId));
@@ -74,74 +79,14 @@ export function ReceivableCollectableForm(props: ReceivableCollectableFormProps)
 
     const styleParameters = state?.styleParameters || {} as DivStyleParameters;
     const positionParameters = state?.positionParameters || {} as DivPositionParameters;
-    const behaviourParameters = state?.behaviourParameters || {} as DivBehaviourParameters; // чето сделать с приведением
-    const { ref: parentDivRef } = refService?.refs[state?.parent as string] || {};
-    const { ref: currentDivRef } = refService?.refs[state?.id as string] || {};
+    const behaviorParameters = state?.behaviorParameters || {} as DivBehaviorParameters; // чето сделать с приведением
 
     const dispatch = useEditorDispatch();
 
     const handleParamsChange = useCallback((params: ReceivableCollectableParameters, name?: string, isIntermediate?: boolean) => {
         dispatch(updateDivReceivableCollectableParameters({ id, collectableId, params, nohistory: isIntermediate }));
-    }, [id, collectableId, styleParameters]);
+    }, [id, collectableId]);
 
-
-    const handleDivPosParamsChange = useCallback((params: DivPositionParameters, name?: string, isIntermediate?: boolean) => {
-        dispatch(updateDivPositionParameters({ id, params, nohistory: isIntermediate }));
-    }, [id, styleParameters]);
-    const handleDivBehaveParamsChange = useCallback((params: DivBehaviourParameters, name?: string, isIntermediate?: boolean) => {
-        dispatch(updateDivBehaviourParameters({ id, params, nohistory: isIntermediate }));
-    }, [id, styleParameters]);
-    const handleCollectParamsChange = useCallback((collectableParameters: CollectableParameters, name?: string, isIntermediate?: boolean) => {
-        dispatch(updateDivBehaviourParameters({
-            id,
-            params: { ...behaviourParameters, collectableParameters },
-            nohistory: isIntermediate
-        }));
-    }, [id, behaviourParameters]);
-
-    const handleReceiverParamsChange = useCallback((receiverParameters: ReceiverParameters, name?: string, isIntermediate?: boolean) => {
-        dispatch(updateDivBehaviourParameters({
-            id,
-            params: { ...behaviourParameters, receiverParameters },
-            nohistory: isIntermediate
-        }));
-    }, [id, behaviourParameters]);
-
-
-    const getParentSize = useCallback(() => {
-        const rootSize: Vec = getRootSize();
-
-        const { borderWidth: parentBorderWidth = [0, SizeUnit.px] } = parentDiv?.styleParameters || {};
-        const parentSize: Vec = parentDivRef?.current
-            ? [parentDivRef.current.offsetWidth - 2 * parentBorderWidth[0], parentDivRef.current.offsetHeight - 2 * parentBorderWidth[0]]
-            : rootSize;
-
-        return parentSize;
-    }, [parentDiv, parentDivRef]);
-
-    const getCurrentSize = useCallback(() => {
-        const rootSize: Vec = getRootSize();
-
-        const { borderWidth: parentBorderWidth = [0, SizeUnit.px] } = styleParameters || {};
-        const currentSize: Vec = currentDivRef?.current
-            ? [currentDivRef.current.offsetWidth - 2 * parentBorderWidth[0], currentDivRef.current.offsetHeight - 2 * parentBorderWidth[0]]
-            : rootSize;
-
-        return currentSize;
-    }, [styleParameters, currentDivRef]);
-
-    const handleDelete = useCallback(() => {
-        dispatch(deleteDiv({ id }));
-    }, [id]);
-    const handleUp = useCallback(() => {
-        dispatch(divUp({ id }));
-    }, [id]);
-    const handleDown = useCallback(() => {
-        dispatch(divDown({ id }));
-    }, [id]);
-
-
-    const isRoot = !state?.parent;
     return (
         <div>
             <ViewDiv
@@ -156,24 +101,24 @@ export function ReceivableCollectableForm(props: ReceivableCollectableFormProps)
                     onChange={handleParamsChange}
                 >
                     <Vec2NumberUnitInputDragFor
-                        angle={parentAngle}
+                        angle={currentDiv.positionParameters.angle}
                         units={allUnits}
-                        autoResetUnitTo={SizeUnit.px}
+                        autoResetUnitTo={SizeUnit.pc}
                         name={'startPoint'}
                         text={'start point'}
                         getRootSize={getRootSize}
-                        getParentSize={getParentSize}
+                        getParentSize={getCurrentSize}
                         separator={' '}
                     />
 
                     <Vec2NumberUnitInputDragFor
-                        angle={parentAngle}
+                        angle={currentDiv.positionParameters.angle}
                         units={allUnits}
-                        autoResetUnitTo={SizeUnit.px}
+                        autoResetUnitTo={SizeUnit.pc}
                         name={'size'}
                         text={'size'}
                         getRootSize={getRootSize}
-                        getParentSize={getParentSize}
+                        getParentSize={getCurrentSize}
                         separator={' '}
                     />
 

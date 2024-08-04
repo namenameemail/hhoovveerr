@@ -12,7 +12,7 @@ export const getInitialDivState = (): Omit<Div, 'id'> => {
             ...defaultDivStyleParameters,
             color: 'white',
         },
-        behaviourParameters: {
+        behaviorParameters: {
             openEvent: InteractionEvent.mouseEnter,
             closeEvent: InteractionEvent.mouseLeave,
             isCollectable: false,

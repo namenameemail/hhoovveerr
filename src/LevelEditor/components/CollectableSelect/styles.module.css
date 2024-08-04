@@ -7,7 +7,7 @@
 .allCollectables {
     display: flex;
     flex-direction: row;
-    position: absolute;
+    /* position: absolute; */
     top: 100%;
     border: 1px solid;
     background: white;

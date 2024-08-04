@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import { selectTreeRoot, selectTreeRootId } from "../../store/currentProject/tree";
 import { DivTreeNode } from "./DivTreeNode";
 import { useEditorSelector } from "../../store";
-import { getDivSizeById } from "../EditDiv/refService";
 
 export interface DivTreeProps {
     className?: string;

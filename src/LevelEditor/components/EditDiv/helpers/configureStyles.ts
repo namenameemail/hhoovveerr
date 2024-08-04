@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
 import {
-    DivBehaviourParameters,
+    DivBehaviorParameters,
     DivPositionParameters,
     DivStyleParameters,
     SizeUnit,
@@ -34,7 +34,7 @@ export const getSize = (value: number, unit: SizeUnit, rootSize: Vec, neg?: bool
 export type StylesConfig = {
     styleParameters: DivStyleParameters
     positionParameters: DivPositionParameters
-    behaviourParameters: DivBehaviourParameters
+    behaviorParameters: DivBehaviorParameters
     isBlendActive: boolean,
     images: Asset[],
     fonts: Asset[],
@@ -46,7 +46,7 @@ export type StylesConfig = {
 export const getStyles = (stylesConfig: StylesConfig): DivStyles => {
     const {
         positionParameters,
-        behaviourParameters,
+        behaviorParameters,
         styleParameters,
         isBlendActive,
         images,
@@ -66,7 +66,7 @@ export const getStyles = (stylesConfig: StylesConfig): DivStyles => {
         collectableParameters: {
             inventorySize = [[0, SizeUnit.px], [0, SizeUnit.px]],
         }
-    } = behaviourParameters;
+    } = behaviorParameters;
 
     const {
         color,

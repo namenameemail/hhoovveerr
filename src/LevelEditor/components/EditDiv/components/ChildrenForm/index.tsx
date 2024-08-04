@@ -7,7 +7,6 @@ import cn from "classnames";
 import styles from "./styles.module.css";
 import { DragEvent, DragHandler, DragHandlerImperativeHandler, getRandomColor } from 'bbuutoonnss';
 import { setActiveDiv } from "../../../../store/currentProject/tree";
-// import { getDivSizeById } from "../../refService";
 import { getValueChangeByUnit } from "../../../../../components/inputs/Vec2NumberUnitDrag";
 import { useEditorDispatch, useEditorSelector } from "../../../../store";
 import { getInitialDivState } from "../../../../store/currentProject/tree/helpers/getInitialDivState";
@@ -30,9 +29,8 @@ export interface ChildrenFormProps {
 export function ChildrenForm(props: ChildrenFormProps) {
 
     const rootId = useEditorSelector(selectTreeRootId);
-    const divRefContext = useDivRefContext();
-    const { refService: { current: refService } } = divRefContext;
-    const getRootSize = refService?.getDivSizeById(rootId) as () => Vec;
+    const { refService } = useDivRefContext();
+    const getRootSize = refService.getDivSizeById(rootId);
 
 
     const editorParams = useEditorSelector(selectEditorParams);

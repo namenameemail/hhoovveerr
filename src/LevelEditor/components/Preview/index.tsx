@@ -9,7 +9,7 @@ import { ViewDiv } from "../ViewDiv";
 import { selectEditorParams } from "../../store/currentProject/editorParams";
 import { ViewProvider } from "./context/ViewContext";
 import { DivRefService } from "../../services/divRefService";
-import { DivRefProvider } from "./context/DivRefContext";
+import { DivRefProvider, useDivRefContext } from "./context/DivRefContext";
 
 
 export interface PreviewProps {
@@ -30,7 +30,6 @@ export function Preview(props: PreviewProps) {
         <DivRefProvider>
             <ViewProvider>
                 <ViewDiv
-                    // refService={refService}
                     id={rootId}
                     isRoot
                     openActivePath={editorParams.openActivePath}

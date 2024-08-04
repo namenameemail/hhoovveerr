@@ -68,7 +68,7 @@ export const addById = (elements: DivById, targetId: DivId, state: Omit<Div, 'id
 export const getAllCollectableIds = (elements: DivById): DivId[] => {
 
     return Object.entries(elements)
-        .filter(([elementId, element]) => element?.behaviourParameters.isCollectable)
+        .filter(([elementId, element]) => element?.behaviorParameters.isCollectable)
         .map(([elementId, element]) => elementId);
 };
 

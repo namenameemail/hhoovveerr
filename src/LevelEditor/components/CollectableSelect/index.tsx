@@ -15,7 +15,6 @@ import {
 } from "../../store/currentProject/tree";
 import { DivId } from "../../store/currentProject/tree/types";
 import { EditDiv } from "../EditDiv";
-// import { getDivSizeById } from "../EditDiv/refService";
 import { ViewDiv } from "../ViewDiv";
 
 export interface CollectableSelectProps {

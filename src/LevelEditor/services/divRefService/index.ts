@@ -21,7 +21,11 @@ export class DivRefService {
     }
 
     getDivSizeById = (elementId: DivId) => (): Vec => {
-        return [this.refs[elementId]?.ref.current?.offsetWidth || 0, this.refs[elementId]?.ref.current?.offsetHeight || 0];
+        console.log(3333, elementId, this.refs[elementId]?.ref.current)
+        return [
+            this.refs[elementId]?.ref.current?.offsetWidth || 0, 
+            this.refs[elementId]?.ref.current?.offsetHeight || 0
+        ];
     };
 }
 

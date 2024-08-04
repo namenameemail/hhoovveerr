@@ -7,7 +7,7 @@ import React, { useCallback, useRef } from "react";
 import { Div, DivId, SizeUnit, Vec } from "../../../../store/currentProject/tree/types";
 import { useEditorDispatch, useEditorSelector } from "../../../../store";
 import { ViewDiv } from "../../../ViewDiv";
-import { refServiceView } from "../../refService";
+import { useDivRefContext } from '../../context/DivRefContext';
 
 export interface InventoryProps {
     className?: string;
@@ -16,6 +16,7 @@ export interface InventoryProps {
 
 export function Inventory(props: InventoryProps) {
 
+    const { refService: refServiceView } = useDivRefContext();
     const rootId = useEditorSelector(selectTreeRootId);
     const getRootSize = refServiceView.getDivSizeById(rootId)
 

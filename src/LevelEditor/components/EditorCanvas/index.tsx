@@ -8,10 +8,9 @@ import { saveAs } from 'file-saver';
 import { forField } from "../../../components/For/hoc/forField";
 import { useReadAssets } from "../Assets/hooks/useReadAssets";
 import { EditDiv } from "../EditDiv";
-import { refService } from "./refService";
 import { selectActiveDivId, selectIdsPathById, selectTreeRootId } from "../../store/currentProject/tree";
 import { selectEditorParams } from "../../store/currentProject/editorParams";
-import { DivRefProvider } from "../Preview/context/DivRefContext";
+import { DivRefProvider, useDivRefContext } from "../Preview/context/DivRefContext";
 
 export interface EditorCanvasProps {
 
@@ -19,12 +18,14 @@ export interface EditorCanvasProps {
 
 export function EditorCanvas(props: EditorCanvasProps) {
 
+    const { refService } = useDivRefContext();
+
     const activeElementId = useEditorSelector(selectActiveDivId);
     const activePath = useEditorSelector(selectIdsPathById(activeElementId as string));
     const rootId = useEditorSelector(selectTreeRootId);
     const editorParams = useEditorSelector(selectEditorParams);
 
-    return (
+    return !!refService && (
         <EditDiv
             id={rootId}
             isRoot

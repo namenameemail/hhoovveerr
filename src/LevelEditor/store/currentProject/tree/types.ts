@@ -11,7 +11,7 @@ export type Div = {
     id: DivId;
     positionParameters: DivPositionParameters;
     styleParameters: DivStyleParameters;
-    behaviourParameters: DivBehaviourParameters;
+    behaviorParameters: DivBehaviorParameters;
     children: DivId[];
     parent?: DivId;
 }
@@ -54,7 +54,7 @@ export type DivStyleParameters = {
     backgroundSize?: string
 }
 
-export type DivBehaviourParameters = {
+export type DivBehaviorParameters = {
     // условие видимости
     visibilityConditions?: Condition
     // isVisible?: boolean

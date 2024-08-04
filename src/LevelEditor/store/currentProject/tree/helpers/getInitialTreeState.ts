@@ -20,7 +20,7 @@ export const getInitialTreeState = (): Tree => {
                     ...defaultDivStyleParameters,
                     color: 'white',
                 },
-                behaviourParameters: {
+                behaviorParameters: {
                     openEvent: InteractionEvent.mouseEnter,
                     closeEvent: InteractionEvent.mouseLeave,
                     isCollectable: false,

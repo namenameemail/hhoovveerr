@@ -8,7 +8,7 @@ import { EditDiv } from "../../index";
 import { Div, DivId, SizeUnit, Vec } from "../../../../store/currentProject/tree/types";
 import { useEditorDispatch, useEditorSelector } from "../../../../store";
 import { ViewDiv } from "../../../ViewDiv";
-import { refService } from "../../../EditorCanvas/refService";
+import { useDivRefContext } from '../../../Preview/context/DivRefContext';
 
 export interface InventoryProps {
     className?: string;
@@ -17,6 +17,7 @@ export interface InventoryProps {
 
 export function Inventory(props: InventoryProps) {
 
+    const { refService } = useDivRefContext();
     const rootId = useEditorSelector(selectTreeRootId);
     const getRootSize = refService.getDivSizeById(rootId)
 

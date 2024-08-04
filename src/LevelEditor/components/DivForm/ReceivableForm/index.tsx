@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import {
     CollectableParameters,
-    DivBehaviourParameters,
+    DivBehaviorParameters,
     DivPositionParameters,
     DivStyleParameters, ReceivableCollectableParameters, ReceiverParameters,
     SizeUnit,
@@ -27,12 +27,11 @@ import {
     selectParentDivById,
     updateDivStyleParameters,
     updateDivPositionParameters,
-    updateDivBehaviourParameters,
+    updateDivBehaviorParameters,
     selectActiveDivId,
     selectIdsPathById, setDivReceivableCollectableInitialParameters, updateDivReceiverParameters
 } from "../../../store/currentProject/tree";
 import { useEditorDispatch, useEditorSelector } from "../../../store";
-// import { getDivSizeById, refService } from "../../EditDiv/refService";
 import { ImageSelectFor } from "../../ImageSelect";
 import { FontSelectFor } from "../../FontSelect";
 import styles from '../styles.module.css';
@@ -59,9 +58,8 @@ export function ReceivableForm(props: ReceivableFormProps) {
     const { className, id } = props;
     const rootId = useEditorSelector(selectTreeRootId);
 
-    const divRefContext = useDivRefContext();
-    const { refService: { current: refService } } = divRefContext;
-    const getRootSize = refService?.getDivSizeById(rootId) as () => Vec;
+    const { refService } = useDivRefContext();
+    const getRootSize = refService.getDivSizeById(rootId);
 
 
     const activeElementId = useEditorSelector(selectActiveDivId);
@@ -75,10 +73,8 @@ export function ReceivableForm(props: ReceivableFormProps) {
 
     const styleParameters = state?.styleParameters || {} as DivStyleParameters;
     const positionParameters = state?.positionParameters || {} as DivPositionParameters;
-    const behaviourParameters = state?.behaviourParameters || {} as DivBehaviourParameters; // чето сделать с приведением
-    const { ref: parentDivRef } = refService?.refs[state?.parent as string] || {};
-    const { ref: currentDivRef } = refService?.refs[state?.id as string] || {};
-
+    const behaviorParameters = state?.behaviorParameters || {} as DivBehaviorParameters; // чето сделать с приведением
+   
     const dispatch = useEditorDispatch();
 
     const handleDivStyleParamsChange = useCallback((params: DivStyleParameters, name?: string, isIntermediate?: boolean) => {
@@ -87,16 +83,16 @@ export function ReceivableForm(props: ReceivableFormProps) {
     const handleDivPosParamsChange = useCallback((params: DivPositionParameters, name?: string, isIntermediate?: boolean) => {
         dispatch(updateDivPositionParameters({ id, params, nohistory: isIntermediate }));
     }, [id, styleParameters]);
-    const handleDivBehaveParamsChange = useCallback((params: DivBehaviourParameters, name?: string, isIntermediate?: boolean) => {
-        dispatch(updateDivBehaviourParameters({ id, params, nohistory: isIntermediate }));
+    const handleDivBehaveParamsChange = useCallback((params: DivBehaviorParameters, name?: string, isIntermediate?: boolean) => {
+        dispatch(updateDivBehaviorParameters({ id, params, nohistory: isIntermediate }));
     }, [id, styleParameters]);
     const handleCollectParamsChange = useCallback((collectableParameters: CollectableParameters, name?: string, isIntermediate?: boolean) => {
-        dispatch(updateDivBehaviourParameters({
+        dispatch(updateDivBehaviorParameters({
             id,
-            params: { ...behaviourParameters, collectableParameters },
+            params: { ...behaviorParameters, collectableParameters },
             nohistory: isIntermediate
         }));
-    }, [id, behaviourParameters]);
+    }, [id, behaviorParameters]);
 
     const handleReceiverParamsChange = useCallback((receiverParameters: ReceiverParameters, name?: string, isIntermediate?: boolean) => {
         console.log(666, receiverParameters)
@@ -108,27 +104,11 @@ export function ReceivableForm(props: ReceivableFormProps) {
     }, [id]);
 
 
-    const getParentSize = useCallback(() => {
-        const rootSize: Vec = getRootSize();
+    const getParentSize = parentDiv?.id ? refService.getDivSizeById(parentDiv.id) : getRootSize;
 
-        const { borderWidth: parentBorderWidth = [0, SizeUnit.px] } = parentDiv?.styleParameters || {};
-        const parentSize: Vec = parentDivRef?.current
-            ? [parentDivRef.current.offsetWidth - 2 * parentBorderWidth[0], parentDivRef.current.offsetHeight - 2 * parentBorderWidth[0]]
-            : rootSize;
 
-        return parentSize;
-    }, [parentDiv, parentDivRef]);
+    const getCurrentSize = refService.getDivSizeById(id);
 
-    const getCurrentSize = useCallback(() => {
-        const rootSize: Vec = getRootSize();
-
-        const { borderWidth: parentBorderWidth = [0, SizeUnit.px] } = styleParameters || {};
-        const currentSize: Vec = currentDivRef?.current
-            ? [currentDivRef.current.offsetWidth - 2 * parentBorderWidth[0], currentDivRef.current.offsetHeight - 2 * parentBorderWidth[0]]
-            : rootSize;
-
-        return currentSize;
-    }, [styleParameters, currentDivRef]);
 
     const handleDelete = useCallback(() => {
         dispatch(deleteDiv({ id }));
@@ -151,18 +131,19 @@ export function ReceivableForm(props: ReceivableFormProps) {
             <div className={styles.header}>receiver</div>
             <CheckboxFor className={styles.checkbox} name={'isReceiver'} text={'receiver'}/>
             {
-                behaviourParameters.receiverParameters.receivableCollectables?.map((divId) => {
+                behaviorParameters.receiverParameters.receivableCollectables?.map((divId) => {
                     return (
                         <ReceivableCollectableForm key={divId} collectableId={divId} id={id}/>
                     );
                 })
             }
-            {behaviourParameters.isReceiver && (
+            {behaviorParameters.isReceiver && (
                 <For<ReceiverParameters>
-                    value={behaviourParameters.receiverParameters}
+                    value={behaviorParameters.receiverParameters}
                     onChange={handleReceiverParamsChange}
                     className={cn(styles.divForm, styles.receiverForm)}
                 >
+                    1
 
                     <CollectableSelectFor onAdd={handleAdd} name={'receivableCollectables'}/>
 
